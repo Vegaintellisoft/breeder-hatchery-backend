@@ -1,0 +1,132 @@
+KRISHI BREEDER API - EGG COLLECTION DB STRUCTURE
+===============================================
+
+This file documents egg collection database tables from project migrations.
+Source files:
+- migration/run_egg_collection.js (legacy)
+- migration/run_egg_collection_v2.js (current v2)
+- migration/run_egg_collection_fix.js (v2 fixes)
+
+
+CURRENT STRUCTURE (V2)
+======================
+
+1) Table: egg_collection_header
+-------------------------------
+Purpose:
+- One header per flock per collection date.
+
+Columns:
+- id               SERIAL PRIMARY KEY
+- flock_no         VARCHAR(20) NOT NULL
+- plant_code       VARCHAR(20) NOT NULL
+- collection_date  DATE NOT NULL
+- age_days         INT
+- season           VARCHAR(50)
+- entered_by       INT REFERENCES admin(id)
+- sap_synced       BOOLEAN DEFAULT FALSE
+- sap_synced_at    TIMESTAMP DEFAULT NULL
+- created_at       TIMESTAMP DEFAULT NOW()
+- updated_at       TIMESTAMP DEFAULT NOW()
+
+Constraints:
+- UNIQUE (flock_no, collection_date)
+  (also present as constraint uq_egg_header_flock_date in fix migration)
+
+Indexes:
+- idx_ech_flock_date ON (flock_no, collection_date)
+
+
+2) Table: egg_collection_slots
+------------------------------
+Purpose:
+- One slot row per header and schedule time (example: 7-8, 9-10, etc.).
+
+Columns:
+- id               SERIAL PRIMARY KEY
+- header_id        INT NOT NULL REFERENCES egg_collection_header(id) ON DELETE CASCADE
+- schedule_time    VARCHAR(20) NOT NULL
+- egg_weight_time  VARCHAR(20)
+- egg_weight       NUMERIC(6,2)
+- created_at       TIMESTAMP DEFAULT NOW()
+- updated_at       TIMESTAMP DEFAULT NOW()
+
+Constraints:
+- UNIQUE (header_id, schedule_time)
+  (also present as constraint uq_egg_slots_header_time in fix migration)
+
+Indexes:
+- idx_ecs_header ON (header_id)
+
+
+3) Table: egg_collection_rows
+-----------------------------
+Purpose:
+- Grid rows under each slot (shed/part/line level egg values).
+
+Columns:
+- id               SERIAL PRIMARY KEY
+- slot_id          INT NOT NULL REFERENCES egg_collection_slots(id) ON DELETE CASCADE
+- header_id        INT NOT NULL REFERENCES egg_collection_header(id) ON DELETE CASCADE
+- sno              INT NOT NULL
+- shed_id          INT REFERENCES shed_master(id)
+- shed_no          VARCHAR(50)
+- part_id          INT REFERENCES shed_part_master(id)
+- part_row_no      VARCHAR(50)
+- line_id          INT REFERENCES shed_line_master(id)
+- line_no          VARCHAR(50)
+- table_egg        INT NOT NULL DEFAULT 0
+- jumbo_egg        INT NOT NULL DEFAULT 0
+- crack_egg        INT NOT NULL DEFAULT 0
+- waste_reject_egg INT NOT NULL DEFAULT 0
+- hatching_egg     INT NOT NULL DEFAULT 0
+- total_eggs       INT GENERATED ALWAYS AS
+                   (table_egg + jumbo_egg + crack_egg + waste_reject_egg + hatching_egg) STORED
+- created_at       TIMESTAMP DEFAULT NOW()
+- updated_at       TIMESTAMP DEFAULT NOW()
+
+Constraints:
+- UNIQUE (slot_id, shed_id, part_id, line_id)
+  (also present as constraint uq_egg_rows_slot_shed_part_line in fix migration)
+
+Indexes:
+- idx_ecr_slot ON (slot_id)
+- idx_ecr_header ON (header_id)
+
+
+4) Table: egg_collection_summary_v2
+-----------------------------------
+Purpose:
+- Summary per slot and grand total support.
+
+Columns:
+- id               SERIAL PRIMARY KEY
+- header_id        INT NOT NULL REFERENCES egg_collection_header(id) ON DELETE CASCADE
+- slot_id          INT REFERENCES egg_collection_slots(id) ON DELETE SET NULL
+- summary_type     VARCHAR(10) NOT NULL DEFAULT 'slot'
+- schedule_time    VARCHAR(20)
+- table_egg        INT NOT NULL DEFAULT 0
+- jumbo_egg        INT NOT NULL DEFAULT 0
+- crack_egg        INT NOT NULL DEFAULT 0
+- waste_reject_egg INT NOT NULL DEFAULT 0
+- hatching_egg     INT NOT NULL DEFAULT 0
+- total_eggs       INT NOT NULL DEFAULT 0
+- created_at       TIMESTAMP DEFAULT NOW()
+- updated_at       TIMESTAMP DEFAULT NOW()
+
+Constraints:
+- UNIQUE (header_id, slot_id)
+  (also present as constraint uq_egg_summary_header_slot in fix migration)
+
+
+LEGACY STRUCTURE (OLD)
+======================
+
+The older migration also created these tables:
+- egg_collections
+- egg_collection_lines
+- egg_grading_quick
+- egg_collection_summary
+
+These are from migration/run_egg_collection.js and represent the previous design.
+

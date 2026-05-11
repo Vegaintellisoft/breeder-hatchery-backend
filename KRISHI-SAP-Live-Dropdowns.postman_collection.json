@@ -1,0 +1,352 @@
+{
+  "info": {
+    "name": "KRISHI - SAP Live Dropdowns",
+    "_postman_id": "krishi-sap-live-dropdowns-v1",
+    "description": "Live SAP dropdown flow for all breeder screens: Plant (werks) -> Order (aufnr) -> Flock.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "module",
+      "value": "mortality",
+      "type": "string"
+    },
+    {
+      "key": "werks",
+      "value": "1901",
+      "type": "string"
+    },
+    {
+      "key": "aufnr",
+      "value": "190125000183",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "SAP Live Dropdown Flow",
+      "item": [
+        {
+          "name": "1) Get Plants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/plants",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "plants"
+              ]
+            },
+            "description": "Step 1: Load plant dropdown (werks) from SAP get_plant endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "2) Get Orders by Plant",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/orders?module={{module}}&werks={{werks}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "{{module}}"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                }
+              ]
+            },
+            "description": "Step 2: Use selected plant (werks) to fetch order dropdown (aufnr)."
+          },
+          "response": []
+        },
+        {
+          "name": "3) Get Flocks by Plant + Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/flocks?module={{module}}&werks={{werks}}&aufnr={{aufnr}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "flocks"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "{{module}}"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                },
+                {
+                  "key": "aufnr",
+                  "value": "{{aufnr}}"
+                }
+              ]
+            },
+            "description": "Step 3: Pass selected aufnr to fetch flocks under that order."
+          },
+          "response": []
+        },
+        {
+          "name": "4) Get Full Chain (Orders + Flocks)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/chain?module={{module}}&werks={{werks}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "chain"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "{{module}}"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                }
+              ]
+            },
+            "description": "Optional single-call chain for screens that want both lists together."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Module Quick Tests",
+      "item": [
+        {
+          "name": "Orders - Feeding",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/orders?module=feeding&werks={{werks}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "feeding"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Orders - Laying",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/orders?module=laying&werks={{werks}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "laying"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Orders - Mortality",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/orders?module=mortality&werks={{werks}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "mortality"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Orders - Cull Kill",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/orders?module=cull_kill&werks={{werks}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "cull_kill"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Orders - Cull Sale",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/orders?module=cull_sale&werks={{werks}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "cull_sale"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Orders - Bird Receipt",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sap-live/orders?module=bird_receipt&werks={{werks}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sap-live",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "module",
+                  "value": "bird_receipt"
+                },
+                {
+                  "key": "werks",
+                  "value": "{{werks}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

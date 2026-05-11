@@ -1,0 +1,126 @@
+{
+  "info": {
+    "name": "KRISHI SAP Outbound Push (Mobile API → SAP)",
+    "description": "Push local records to SAP using the same query-string style as the QAS ICF services.\n\n**Base URL:** set `{{baseUrl}}` (e.g. http://localhost:3000)\n**SAP:** uses server `.env` (SAP_BASE_URL, SAP_USER, SAP_PASSWORD, SAP_CLIENT).\n\n- `POST /api/sap-sync/push` — body: `{ \"module\", \"record_id\" }` maps a DB row and POSTs to SAP.\n- `POST /api/sap-sync` — mark synced (also attempts push).\n- `POST /api/sap-sync/push-raw` — pass `endpoint` + `params` for exact SAP test calls.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "feedingRowId", "value": "1" },
+    { "key": "eggHeaderId", "value": "1" },
+    { "key": "mortalityId", "value": "1" },
+    { "key": "cullKillId", "value": "1" },
+    { "key": "cullSalesId", "value": "1" },
+    { "key": "birdWeightId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Push — Feed & Med (flock_feeding_log id)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"module\": \"feeding\",\n  \"record_id\": {{feedingRowId}}\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync/push"
+      }
+    },
+    {
+      "name": "Push — Laying / Egg (egg_collection_header id)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"module\": \"egg_collection\",\n  \"record_id\": {{eggHeaderId}}\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync/push"
+      }
+    },
+    {
+      "name": "Push — Mortality (mortality_log id)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"module\": \"mortality\",\n  \"record_id\": {{mortalityId}}\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync/push"
+      }
+    },
+    {
+      "name": "Push — Cull Kill (cull_kill_log id)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"module\": \"cull_kill\",\n  \"record_id\": {{cullKillId}}\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync/push"
+      }
+    },
+    {
+      "name": "Push — Cull Sale (cull_sales_header id)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"module\": \"cull_sales\",\n  \"record_id\": {{cullSalesId}}\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync/push"
+      }
+    },
+    {
+      "name": "Push — Bird Receipt (flock_bird_weight id)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"module\": \"bird_receipt\",\n  \"record_id\": {{birdWeightId}}\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync/push"
+      }
+    },
+    {
+      "name": "Mark synced (push + set sap_synced on row)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"module\": \"feeding\",\n  \"record_id\": {{feedingRowId}}\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync"
+      }
+    },
+    {
+      "name": "Push RAW — zfeed_med dmfdet (exact SAP params)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"endpoint\": \"zfeed_med\",\n  \"params\": {\n    \"dmfdet\": \"[{\\\"werks\\\":\\\"1901\\\",\\\"aufnr\\\":\\\"\\\",\\\"plnbez\\\":\\\"GR000001\\\",\\\"bldat\\\":\\\"05/05/2026\\\",\\\"matnr\\\":\\\"FD000001\\\",\\\"maktx\\\":\\\"\\\",\\\"meins\\\":\\\"BAG\\\",\\\"erfmgM\\\":\\\"1\\\",\\\"erfmgF\\\":\\\"2\\\"}]\"\n  }\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync/push-raw"
+      }
+    },
+    {
+      "name": "Push RAW — zlaying_prelay breegrn-",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"endpoint\": \"zlaying_prelay\",\n  \"params\": {\n    \"breegrn-\": \"[{\\\"werks\\\":\\\"1905\\\",\\\"aufnr\\\":\\\"190125000033\\\",\\\"matnr\\\":\\\"LY000001\\\",\\\"maktx\\\":\\\"\\\",\\\"batch\\\":\\\"\\\",\\\"hatchdt\\\":\\\"28/10/2024\\\",\\\"bldat\\\":\\\"05/05/2026\\\",\\\"zzflock\\\":\\\"BD-7\\\",\\\"zzage\\\":\\\"78\\\",\\\"zzstock\\\":\\\"\\\",\\\"zzfstk\\\":\\\"\\\",\\\"zzmstk\\\":\\\"\\\",\\\"matnre\\\":\\\"EG000001\\\",\\\"maktxe\\\":\\\"BROILER EGG\\\",\\\"meins\\\":\\\"NOS\\\",\\\"grqty\\\":\\\"10\\\",\\\"estrate\\\":\\\"10\\\"}]\"\n  }\n}"
+        },
+        "url": "{{baseUrl}}/api/sap-sync/push-raw"
+      }
+    }
+  ]
+}

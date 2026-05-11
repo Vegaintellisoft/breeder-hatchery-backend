@@ -1,0 +1,358 @@
+{
+  "info": {
+    "name": "KRISHI - Breeder Daily Entry API",
+    "_postman_id": "krishi-breeder-api-v2",
+    "description": "Breeder Daily Entry API - flock_id only on entries",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Master Data",
+      "item": [
+        {
+          "name": "Get All Flocks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/flocks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "flocks"]
+            },
+            "description": "Get all active flocks with male & female opening stock and unit_name"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Opening Stock",
+      "item": [
+        {
+          "name": "Get Opening Stock - FL-001",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/flock/1/opening-stock?entry_date=2024-09-23",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "flock", "1", "opening-stock"],
+              "query": [
+                {
+                  "key": "entry_date",
+                  "value": "2024-09-23",
+                  "description": "Date for the entry (YYYY-MM-DD)"
+                }
+              ]
+            },
+            "description": "Returns SAP seeded opening stock if no previous entry. Returns previous day closing stock if exists."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Opening Stock - FL-002",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/flock/2/opening-stock?entry_date=2024-09-23",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "flock", "2", "opening-stock"],
+              "query": [{ "key": "entry_date", "value": "2024-09-23" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Opening Stock - FL-003",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/flock/3/opening-stock?entry_date=2024-09-23",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "flock", "3", "opening-stock"],
+              "query": [{ "key": "entry_date", "value": "2024-09-23" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Opening Stock - FL-004",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/flock/4/opening-stock?entry_date=2024-09-23",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "flock", "4", "opening-stock"],
+              "query": [{ "key": "entry_date", "value": "2024-09-23" }]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Daily Entry",
+      "item": [
+        {
+          "name": "Save Entry - Full Data (FL-001)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_id\": 1,\n  \"entry_date\": \"2024-09-23\",\n  \"day_name\": \"Monday\",\n  \"week_label\": \"2nd Week\",\n  \"age_years\": 3,\n\n  \"male_opening_stock\": 500,\n  \"male_mortality\": 2,\n  \"male_culls_kill\": 1,\n  \"male_culls_sale\": 0,\n  \"male_transfer_in\": 0,\n  \"male_transfer_out\": 0,\n  \"male_sales\": 0,\n\n  \"female_opening_stock\": 4500,\n  \"female_mortality\": 5,\n  \"female_culls_kill\": 2,\n  \"female_culls_sale\": 1,\n  \"female_transfer_in\": 0,\n  \"female_transfer_out\": 0,\n  \"female_sales\": 0,\n\n  \"feeding_notes\": \"Fed 120g per bird, no issues\",\n  \"shed_hygiene_notes\": \"Litter changed, cleaned east side\",\n  \"body_weight_avg_kg\": 3.125,\n  \"egg_collections\": 23,\n\n  \"temp_min_celsius\": 22.5,\n  \"temp_max_celsius\": 30.0,\n  \"humidity_min\": 55.0,\n  \"humidity_max\": 75.0,\n  \"lighting_start\": \"05:00\",\n  \"lighting_end\": \"21:00\",\n\n  \"remarks\": \"All birds healthy\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry"]
+            },
+            "description": "Full daily entry for FL-001. Closing stock auto-calculated by PostgreSQL."
+          },
+          "response": []
+        },
+        {
+          "name": "Save Entry - Full Data (FL-002)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_id\": 2,\n  \"entry_date\": \"2024-09-23\",\n  \"day_name\": \"Monday\",\n  \"week_label\": \"3rd Week\",\n  \"age_years\": 2.5,\n\n  \"male_opening_stock\": 480,\n  \"male_mortality\": 1,\n  \"male_culls_kill\": 0,\n  \"male_culls_sale\": 1,\n  \"male_transfer_in\": 0,\n  \"male_transfer_out\": 0,\n  \"male_sales\": 0,\n\n  \"female_opening_stock\": 4320,\n  \"female_mortality\": 3,\n  \"female_culls_kill\": 1,\n  \"female_culls_sale\": 0,\n  \"female_transfer_in\": 0,\n  \"female_transfer_out\": 0,\n  \"female_sales\": 0,\n\n  \"feeding_notes\": \"Normal feeding 115g per bird\",\n  \"shed_hygiene_notes\": \"Routine cleaning done\",\n  \"body_weight_avg_kg\": 2.875,\n  \"egg_collections\": 18,\n\n  \"temp_min_celsius\": 21.0,\n  \"temp_max_celsius\": 28.5,\n  \"humidity_min\": 58.0,\n  \"humidity_max\": 72.0,\n  \"lighting_start\": \"05:30\",\n  \"lighting_end\": \"20:30\",\n\n  \"remarks\": \"Slight drop in egg production\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Save Entry - With Transfer In/Out (FL-003)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_id\": 3,\n  \"entry_date\": \"2024-09-23\",\n  \"day_name\": \"Monday\",\n  \"week_label\": \"1st Week\",\n  \"age_years\": 1.5,\n\n  \"male_opening_stock\": 520,\n  \"male_mortality\": 0,\n  \"male_culls_kill\": 0,\n  \"male_culls_sale\": 0,\n  \"male_transfer_in\": 10,\n  \"male_transfer_out\": 5,\n  \"male_sales\": 0,\n\n  \"female_opening_stock\": 4680,\n  \"female_mortality\": 4,\n  \"female_culls_kill\": 0,\n  \"female_culls_sale\": 0,\n  \"female_transfer_in\": 20,\n  \"female_transfer_out\": 0,\n  \"female_sales\": 0,\n\n  \"feeding_notes\": \"Extra feed due to transfer birds\",\n  \"shed_hygiene_notes\": \"Deep litter cleaned\",\n  \"body_weight_avg_kg\": 3.450,\n  \"egg_collections\": 30,\n\n  \"temp_min_celsius\": 20.0,\n  \"temp_max_celsius\": 32.5,\n  \"humidity_min\": 60.0,\n  \"humidity_max\": 80.0,\n  \"lighting_start\": \"04:30\",\n  \"lighting_end\": \"21:30\",\n\n  \"remarks\": \"Transfer from Unit A completed\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Save Entry - Minimal (required fields only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_id\": 1,\n  \"entry_date\": \"2024-09-24\",\n  \"male_opening_stock\": 497,\n  \"female_opening_stock\": 4492\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry"]
+            },
+            "description": "Only flock_id and entry_date required. All other fields default to 0."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Entry - same flock + date = upsert",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_id\": 1,\n  \"entry_date\": \"2024-09-23\",\n  \"day_name\": \"Monday\",\n  \"week_label\": \"2nd Week\",\n  \"age_years\": 3,\n\n  \"male_opening_stock\": 500,\n  \"male_mortality\": 3,\n  \"male_culls_kill\": 2,\n  \"male_culls_sale\": 0,\n  \"male_transfer_in\": 0,\n  \"male_transfer_out\": 0,\n  \"male_sales\": 0,\n\n  \"female_opening_stock\": 4500,\n  \"female_mortality\": 6,\n  \"female_culls_kill\": 3,\n  \"female_culls_sale\": 2,\n  \"female_transfer_in\": 0,\n  \"female_transfer_out\": 0,\n  \"female_sales\": 0,\n\n  \"feeding_notes\": \"Updated - Feed adjusted to 125g\",\n  \"shed_hygiene_notes\": \"Updated - Full disinfection done\",\n  \"body_weight_avg_kg\": 3.200,\n  \"egg_collections\": 25,\n\n  \"temp_min_celsius\": 23.0,\n  \"temp_max_celsius\": 31.0,\n  \"humidity_min\": 56.0,\n  \"humidity_max\": 76.0,\n  \"lighting_start\": \"05:00\",\n  \"lighting_end\": \"21:00\",\n\n  \"remarks\": \"Updated - corrected mortality count\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry"]
+            },
+            "description": "Same flock_id + entry_date = updates existing record automatically."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Entry by Flock + Date",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry/1/2024-09-23",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry", "1", "2024-09-23"]
+            },
+            "description": "Get entry for flock_id=1 on 2024-09-23"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Entries for Flock",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entries/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entries", "1"]
+            },
+            "description": "List all entries for flock_id=1. Newest first, default limit 30."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Entries with Date Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entries/1?from=2024-09-01&to=2024-09-30&limit=30&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entries", "1"],
+              "query": [
+                { "key": "from",   "value": "2024-09-01" },
+                { "key": "to",     "value": "2024-09-30" },
+                { "key": "limit",  "value": "30" },
+                { "key": "offset", "value": "0" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Validation Tests",
+      "item": [
+        {
+          "name": "❌ Missing flock_id and entry_date",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"male_opening_stock\": 500\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry"]
+            },
+            "description": "Should return 422 - flock_id and entry_date are required"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Invalid Date Format",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_id\": 1,\n  \"entry_date\": \"23-09-2024\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry"]
+            },
+            "description": "Should return 422 - date must be YYYY-MM-DD"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Flock Not Found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/flock/999/opening-stock?entry_date=2024-09-23",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "flock", "999", "opening-stock"],
+              "query": [{ "key": "entry_date", "value": "2024-09-23" }]
+            },
+            "description": "Should return 404 - flock ID 999 does not exist"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Negative Stock Value",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_id\": 1,\n  \"entry_date\": \"2024-09-25\",\n  \"male_opening_stock\": -100\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry"]
+            },
+            "description": "Should return 422 - stock values must be non-negative"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Entry Not Found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/breeder/entry/1/2000-01-01",
+              "host": ["{{base_url}}"],
+              "path": ["api", "breeder", "entry", "1", "2000-01-01"]
+            },
+            "description": "Should return 404 - no entry on this date"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

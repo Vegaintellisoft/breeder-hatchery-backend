@@ -1,0 +1,944 @@
+{
+  "info": {
+    "name": "KRISHI Breeder — Admin Grid + Edit APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "flock_no",
+      "value": "LY000001"
+    },
+    {
+      "key": "mortality_id",
+      "value": "1"
+    },
+    {
+      "key": "cull_id",
+      "value": "1"
+    },
+    {
+      "key": "shed_id",
+      "value": "1"
+    },
+    {
+      "key": "part_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔽 Dropdowns",
+      "item": [
+        {
+          "name": "GET Dropdowns (all edit forms)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/dropdowns",
+              "host": [
+                "{{base_url}}/api/admin/grid/dropdowns"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "GET Shed Parts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/sheds/{{shed_id}}/parts",
+              "host": [
+                "{{base_url}}/api/admin/grid/sheds/{{shed_id}}/parts"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "GET Part Lines",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/parts/{{part_id}}/lines",
+              "host": [
+                "{{base_url}}/api/admin/grid/parts/{{part_id}}/lines"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Daily Feed Grid",
+      "item": [
+        {
+          "name": "List — Feed (default)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=feed&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/daily-feed"
+              ],
+              "query": [
+                {
+                  "key": "feed_type",
+                  "value": "feed"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Water",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=water&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/daily-feed"
+              ],
+              "query": [
+                {
+                  "key": "feed_type",
+                  "value": "water"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Medicine",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=medicine&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/daily-feed"
+              ],
+              "query": [
+                {
+                  "key": "feed_type",
+                  "value": "medicine"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Others",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=others&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/daily-feed"
+              ],
+              "query": [
+                {
+                  "key": "feed_type",
+                  "value": "others"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?search=LY000001&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/daily-feed"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "LY000001"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?from_date=2026-04-01&to_date=2026-04-15&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/daily-feed"
+              ],
+              "query": [
+                {
+                  "key": "from_date",
+                  "value": "2026-04-01"
+                },
+                {
+                  "key": "to_date",
+                  "value": "2026-04-15"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "View Detail (eye icon)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/daily-feed/detail?flock_no=LY000001&date=2026-04-10&feed_type=feed",
+              "host": [
+                "{{base_url}}/api/admin/grid/daily-feed/detail"
+              ],
+              "query": [
+                {
+                  "key": "flock_no",
+                  "value": "LY000001"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-04-10"
+                },
+                {
+                  "key": "feed_type",
+                  "value": "feed"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Row",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/daily-feed/1",
+              "host": [
+                "{{base_url}}/api/admin/grid/daily-feed/1"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✏️ Feed Edit",
+      "item": [
+        {
+          "name": "GET Feed for Edit",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}?date=2026-04-10&feed_type=feed",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-04-10"
+                },
+                {
+                  "key": "feed_type",
+                  "value": "feed"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT Save Feed Edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-04-10\",\n  \"feed_type\": \"feed\",\n  \"plant_code\": \"1902\",\n  \"items\": [\n    {\n      \"item_id\": 1,\n      \"item_name\": \"Broiler Breeder Layer Mash 50KG\",\n      \"uom\": \"Bags\",\n      \"qty_issued_male\": 10,\n      \"qty_issued_female\": 15,\n      \"stock_in_bags\": 200,\n      \"cum_feed\": 500\n    }\n  ],\n  \"male_weight\": 2.45,\n  \"female_weight\": 2.2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✏️ Water Edit",
+      "item": [
+        {
+          "name": "GET Water for Edit",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}?date=2026-04-10&feed_type=water",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-04-10"
+                },
+                {
+                  "key": "feed_type",
+                  "value": "water"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT Save Water Edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-04-10\",\n  \"feed_type\": \"water\",\n  \"plant_code\": \"1902\",\n  \"items\": [\n    {\n      \"item_id\": 1,\n      \"item_name\": \"Drinking Water\",\n      \"uom\": \"Lit\",\n      \"qty_issued_male\": 500,\n      \"qty_issued_female\": 800\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✏️ Medicine Edit",
+      "item": [
+        {
+          "name": "GET Medicine for Edit",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}?date=2026-04-10&feed_type=medicine",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-04-10"
+                },
+                {
+                  "key": "feed_type",
+                  "value": "medicine"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT Save Medicine Edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-04-10\",\n  \"feed_type\": \"medicine\",\n  \"plant_code\": \"1902\",\n  \"items\": [\n    {\n      \"item_id\": 1,\n      \"item_name\": \"Vitamin Supplement\",\n      \"uom\": \"Nos\",\n      \"qty_issued_male\": 2,\n      \"qty_issued_female\": 3,\n      \"stock_in_bags\": 50,\n      \"cum_feed\": 100\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✏️ Others Edit",
+      "item": [
+        {
+          "name": "GET Others for Edit",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}?date=2026-04-10&feed_type=others",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-04-10"
+                },
+                {
+                  "key": "feed_type",
+                  "value": "others"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT Save Others Edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-04-10\",\n  \"feed_type\": \"others\",\n  \"plant_code\": \"1902\",\n  \"items\": [\n    {\n      \"item_id\": 1,\n      \"item_name\": \"Lime Powder\",\n      \"uom\": \"Kg\",\n      \"qty_issued_male\": 5,\n      \"qty_issued_female\": 5\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/feeding/{{flock_no}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💀 Mortality Grid",
+      "item": [
+        {
+          "name": "List — All",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/mortality?limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/mortality"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/mortality?search=LY000001&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/mortality"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "LY000001"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/mortality?from_date=2026-04-01&to_date=2026-04-15&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/mortality"
+              ],
+              "query": [
+                {
+                  "key": "from_date",
+                  "value": "2026-04-01"
+                },
+                {
+                  "key": "to_date",
+                  "value": "2026-04-15"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "View Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/mortality/{{mortality_id}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/mortality/{{mortality_id}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/mortality/{{mortality_id}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/mortality/{{mortality_id}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✏️ Mortality Edit",
+      "item": [
+        {
+          "name": "GET Mortality for Edit",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/mortality/{{mortality_id}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/mortality/{{mortality_id}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "PUT Save Mortality Edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entry_date\": \"2026-04-10\",\n  \"plant_code\": \"1902\",\n  \"flock_no\": \"LY000001\",\n  \"shed_id\": 1,\n  \"part_id\": 2,\n  \"line_id\": 3,\n  \"cum_birds\": 9436,\n  \"total_male\": 989,\n  \"total_female\": 8447,\n  \"schedule\": [\n    {\n      \"slot\": \"morning\",\n      \"male\": 2,\n      \"female\": 3\n    },\n    {\n      \"slot\": \"afternoon\",\n      \"male\": 1,\n      \"female\": 1\n    },\n    {\n      \"slot\": \"evening\",\n      \"male\": 0,\n      \"female\": 1\n    }\n  ],\n  \"reasons\": [\n    {\n      \"reason_id\": 1,\n      \"reason_name\": \"Disease\",\n      \"male_count\": 3,\n      \"female_count\": 5,\n      \"remarks\": \"Resp infection\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/mortality/{{mortality_id}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/mortality/{{mortality_id}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔪 Cull Kill Grid",
+      "item": [
+        {
+          "name": "List — All",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/cull-kill?limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/cull-kill"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/cull-kill?search=LY000001&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/cull-kill"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "LY000001"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/cull-kill?from_date=2026-04-01&to_date=2026-04-15&limit=20&offset=0",
+              "host": [
+                "{{base_url}}/api/admin/grid/cull-kill"
+              ],
+              "query": [
+                {
+                  "key": "from_date",
+                  "value": "2026-04-01"
+                },
+                {
+                  "key": "to_date",
+                  "value": "2026-04-15"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "View Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/cull-kill/{{cull_id}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/cull-kill/{{cull_id}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/cull-kill/{{cull_id}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/cull-kill/{{cull_id}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✏️ Cull Kill Edit",
+      "item": [
+        {
+          "name": "GET Cull Kill for Edit",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/cull-kill/{{cull_id}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/cull-kill/{{cull_id}}"
+              ],
+              "query": []
+            }
+          }
+        },
+        {
+          "name": "PUT Save Cull Kill Edit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entry_date\": \"2026-04-10\",\n  \"plant_code\": \"1902\",\n  \"flock_no\": \"LY000001\",\n  \"shed_id\": 1,\n  \"part_id\": 2,\n  \"line_id\": 3,\n  \"cum_birds\": 9436,\n  \"total_male\": 989,\n  \"total_female\": 8447,\n  \"schedule\": [\n    {\n      \"slot\": \"morning\",\n      \"male\": 1,\n      \"female\": 2\n    },\n    {\n      \"slot\": \"afternoon\",\n      \"male\": 0,\n      \"female\": 1\n    },\n    {\n      \"slot\": \"evening\",\n      \"male\": 1,\n      \"female\": 1\n    }\n  ],\n  \"reasons\": [\n    {\n      \"reason_id\": 1,\n      \"reason_name\": \"Injured\",\n      \"male_count\": 2,\n      \"female_count\": 4,\n      \"remarks\": \"\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/grid/edit/cull-kill/{{cull_id}}",
+              "host": [
+                "{{base_url}}/api/admin/grid/edit/cull-kill/{{cull_id}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

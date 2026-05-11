@@ -1,0 +1,569 @@
+{
+  "info": {
+    "_postman_id": "krishi-sap-sync-flow-line-by-line",
+    "name": "KRISHI Breeder — SAP Sync Flow (line-by-line)",
+    "description": "Ordered checks for SAP integration: health → login → **GET status per module** → **POST /push** (dry SAP) → **POST /** (push + mark) → admin list → **POST bulk** → **POST pull** → **POST push-raw** per SAP endpoint.\n\n**Setup**\n1. Set `baseUrl`, `login_username`, `login_password`.\n2. Run **01 POST Login** — saves `token`.\n3. Set each `record_id_*` to real unsynced ids from your DB (`npm run seed:sap-demo` seeds feeding for today).\n4. Align `plant_code` / `sap_pull_werks` with your farm (e.g. `1902`).\n\n**Auth**\n- Bearer on all routes except health + login.\n- `/pull`, `/push-raw`, `/unsynced`, `/push-unsynced` → **Super Admin** or **Farm Manager** (see `SAP_SYNC_ADMIN_ROLES`).\n\n**POST routes (this API)**\n| Route | Role | Purpose |\n|-------|------|---------|\n| `POST /api/admin/login` | — | JWT |\n| `POST /api/sap-sync/push` | any synced user | SAP call only; DB **unchanged** |\n| `POST /api/sap-sync` | same | SAP + set `sap_synced` on **2xx** |\n| `POST /api/sap-sync/pull` | admin | GET from SAP → DB |\n| `POST /api/sap-sync/push-raw` | admin | Exact SAP query params |\n| `POST /api/sap-sync/push-unsynced` | admin | Bulk push + mark |\n\nRun folders top-to-bottom for a line-by-line regression.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "login_username", "value": "your_username" },
+    { "key": "login_password", "value": "your_password" },
+    { "key": "token", "value": "" },
+    { "key": "plant_code", "value": "1902" },
+    { "key": "sap_pull_werks", "value": "1902" },
+    { "key": "record_id_feeding", "value": "2", "description": "flock_feeding_log.id (seed:sap-demo)" },
+    { "key": "record_id_egg_collection", "value": "1", "description": "egg_collection_header.id" },
+    { "key": "record_id_mortality", "value": "1", "description": "mortality_log.id" },
+    { "key": "record_id_cull_kill", "value": "1", "description": "cull_kill_log.id" },
+    { "key": "record_id_cull_sales", "value": "1", "description": "cull_sales_header.id" },
+    { "key": "record_id_bird_weighing", "value": "1", "description": "flock_bird_weight.id" },
+    { "key": "bulk_limit_per_module", "value": "10" },
+    { "key": "unsynced_list_limit", "value": "30" }
+  ],
+  "item": [
+    {
+      "name": "00 GET — smoke",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health",
+            "description": "API process up."
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 POST — login",
+      "item": [
+        {
+          "name": "POST /api/admin/login (saves token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "try {",
+                  "  var j = pm.response.json();",
+                  "  if (j.token) {",
+                  "    pm.collectionVariables.set('token', j.token);",
+                  "    pm.test('token saved to collection', () => true);",
+                  "  } else {",
+                  "    pm.test('token missing — check username/password/category', () => false);",
+                  "  }",
+                  "} catch (e) { pm.test('JSON parse failed', () => false); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{login_username}}\",\n  \"password\": \"{{login_password}}\",\n  \"category\": \"Breeder\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/login",
+            "description": "Response field `token`. Test script copies it to collection variable `token`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 GET — /api/sap-sync/status (one per module)",
+      "item": [
+        {
+          "name": "GET status — feeding",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=feeding&record_id={{record_id_feeding}}",
+            "description": "Check `can_sync_to_sap_mobile` (today IST) vs `can_sync_to_sap_admin`."
+          }
+        },
+        {
+          "name": "GET status — egg_collection",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=egg_collection&record_id={{record_id_egg_collection}}"
+          }
+        },
+        {
+          "name": "GET status — mortality",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=mortality&record_id={{record_id_mortality}}"
+          }
+        },
+        {
+          "name": "GET status — cull_kill",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=cull_kill&record_id={{record_id_cull_kill}}"
+          }
+        },
+        {
+          "name": "GET status — cull_sales",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=cull_sales&record_id={{record_id_cull_sales}}"
+          }
+        },
+        {
+          "name": "GET status — bird_weighing",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=bird_weighing&record_id={{record_id_bird_weighing}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 POST — /api/sap-sync/push (SAP only, no DB flag)",
+      "item": [
+        {
+          "name": "POST push — feeding",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"feeding\",\n  \"record_id\": {{record_id_feeding}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push",
+            "description": "Dry run: calls SAP; does **not** set `sap_synced`. Expect `sap_payload_preview` / `sap_response` in body."
+          }
+        },
+        {
+          "name": "POST push — egg_collection",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"egg_collection\",\n  \"record_id\": {{record_id_egg_collection}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push"
+          }
+        },
+        {
+          "name": "POST push — mortality",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"mortality\",\n  \"record_id\": {{record_id_mortality}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push"
+          }
+        },
+        {
+          "name": "POST push — cull_kill",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"cull_kill\",\n  \"record_id\": {{record_id_cull_kill}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push"
+          }
+        },
+        {
+          "name": "POST push — cull_sales",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"cull_sales\",\n  \"record_id\": {{record_id_cull_sales}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push"
+          }
+        },
+        {
+          "name": "POST push — bird_weighing",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"bird_weighing\",\n  \"record_id\": {{record_id_bird_weighing}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push",
+            "description": "Same table as `bird_receipt`; SAP endpoint `zbird_receipt`."
+          }
+        },
+        {
+          "name": "POST push — bird_receipt (alternate module key)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"bird_receipt\",\n  \"record_id\": {{record_id_bird_weighing}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push",
+            "description": "Alias module name; still reads `flock_bird_weight` by id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 POST — /api/sap-sync (push + mark sap_synced on 2xx)",
+      "item": [
+        {
+          "name": "POST sync — feeding",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"feeding\",\n  \"record_id\": {{record_id_feeding}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync",
+            "description": "Updates DB **only** when SAP returns HTTP 2xx."
+          }
+        },
+        {
+          "name": "POST sync — egg_collection",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"egg_collection\",\n  \"record_id\": {{record_id_egg_collection}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        },
+        {
+          "name": "POST sync — mortality",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"mortality\",\n  \"record_id\": {{record_id_mortality}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        },
+        {
+          "name": "POST sync — cull_kill",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"cull_kill\",\n  \"record_id\": {{record_id_cull_kill}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        },
+        {
+          "name": "POST sync — cull_sales",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"cull_sales\",\n  \"record_id\": {{record_id_cull_sales}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        },
+        {
+          "name": "POST sync — bird_weighing",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"bird_weighing\",\n  \"record_id\": {{record_id_bird_weighing}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 GET — admin unsynced grid",
+      "item": [
+        {
+          "name": "GET /api/sap-sync/unsynced",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/unsynced?plant_code={{plant_code}}&limit={{unsynced_list_limit}}",
+            "description": "**Admin only.** Optional: `&modules=feeding,mortality` (comma-separated)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 POST — /api/sap-sync/push-unsynced (admin bulk)",
+      "item": [
+        {
+          "name": "POST push-unsynced — all modules",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plant_code\": \"{{plant_code}}\",\n  \"limit_per_module\": {{bulk_limit_per_module}},\n  \"modules\": [\n    \"feeding\",\n    \"egg_collection\",\n    \"mortality\",\n    \"cull_kill\",\n    \"cull_sales\",\n    \"bird_weighing\"\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-unsynced",
+            "description": "Processes rows in order per module; returns `succeeded` / `failed` arrays."
+          }
+        },
+        {
+          "name": "POST push-unsynced — feeding only",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plant_code\": \"{{plant_code}}\",\n  \"limit_per_module\": {{bulk_limit_per_module}},\n  \"modules\": [\"feeding\"]\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-unsynced"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 POST — /api/sap-sync/pull (SAP → DB, admin)",
+      "item": [
+        {
+          "name": "POST pull — feeding",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"feeding\",\n  \"werks\": \"{{sap_pull_werks}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/pull",
+            "description": "GET `zfeed_med` + persist feed/med lines."
+          }
+        },
+        {
+          "name": "POST pull — egg_collection",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"egg_collection\",\n  \"werks\": \"{{sap_pull_werks}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/pull"
+          }
+        },
+        {
+          "name": "POST pull — mortality",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"mortality\",\n  \"werks\": \"{{sap_pull_werks}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/pull"
+          }
+        },
+        {
+          "name": "POST pull — cull_kill",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"cull_kill\",\n  \"werks\": \"{{sap_pull_werks}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/pull"
+          }
+        },
+        {
+          "name": "POST pull — cull_sales",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"cull_sales\",\n  \"werks\": \"{{sap_pull_werks}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/pull"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 POST — /api/sap-sync/push-raw (admin, exact SAP params)",
+      "item": [
+        {
+          "name": "POST raw — zfeed_med (dmfdet)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zfeed_med\",\n  \"params\": {\n    \"dmfdet\": \"[{\\\"werks\\\":\\\"1902\\\",\\\"aufnr\\\":\\\"\\\",\\\"plnbez\\\":\\\"LY000001\\\",\\\"bldat\\\":\\\"05/05/2026\\\",\\\"matnr\\\":\\\"1\\\",\\\"maktx\\\":\\\"Demo Feed\\\",\\\"meins\\\":\\\"Kg\\\",\\\"erfmgM\\\":\\\"12.5\\\",\\\"erfmgF\\\":\\\"18\\\"}]\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw",
+            "description": "Matches outbound feeding JSON array shape; edit `bldat` / `matnr` for your SAP."
+          }
+        },
+        {
+          "name": "POST raw — zlaying_prelay (breegrn-)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zlaying_prelay\",\n  \"params\": {\n    \"breegrn-\": \"[{\\\"werks\\\":\\\"1902\\\",\\\"aufnr\\\":\\\"\\\",\\\"matnr\\\":\\\"LY000001\\\",\\\"maktx\\\":\\\"\\\",\\\"batch\\\":\\\"\\\",\\\"hatchdt\\\":\\\"28/10/2024\\\",\\\"bldat\\\":\\\"05/05/2026\\\",\\\"zzflock\\\":\\\"BD-7\\\",\\\"zzage\\\":\\\"78\\\",\\\"zzstock\\\":\\\"\\\",\\\"zzfstk\\\":\\\"\\\",\\\"zzmstk\\\":\\\"\\\",\\\"matnre\\\":\\\"EG000001\\\",\\\"maktxe\\\":\\\"HATCHING EGG\\\",\\\"meins\\\":\\\"NOS\\\",\\\"grqty\\\":\\\"10\\\",\\\"estrate\\\":\\\"10\\\"}]\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw"
+          }
+        },
+        {
+          "name": "POST raw — zmortality_ent (bremor-)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zmortality_ent\",\n  \"params\": {\n    \"bremor-\": \"[{\\\"werks\\\":\\\"1902\\\",\\\"aufnr\\\":\\\"\\\",\\\"matnr\\\":\\\"LY000001\\\",\\\"bldat\\\":\\\"05/05/2026\\\",\\\"fkimgF\\\":\\\"8\\\",\\\"fkimgM\\\":\\\"4\\\",\\\"fkimg\\\":\\\"12\\\"}]\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw"
+          }
+        },
+        {
+          "name": "POST raw — zculls_kill (breckill)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zculls_kill\",\n  \"params\": {\n    \"breckill\": \"[{\\\"werks\\\":\\\"1902\\\",\\\"aufnr\\\":\\\"\\\",\\\"matnr\\\":\\\"LY000001\\\",\\\"bldat\\\":\\\"05/05/2026\\\",\\\"fkimgF\\\":\\\"3\\\",\\\"fkimgM\\\":\\\"2\\\",\\\"fkimg\\\":\\\"5\\\"}]\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw"
+          }
+        },
+        {
+          "name": "POST raw — zculls_sale (flat params)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zculls_sale\",\n  \"params\": {\n    \"bldat\": \"05/05/2026\",\n    \"budat\": \"\",\n    \"werks\": \"1902\",\n    \"aufnr\": \"\",\n    \"plnbez\": \"LY000001\",\n    \"batch\": \"B1\",\n    \"zzage\": \"70\",\n    \"zzstock\": \"1000\",\n    \"zzfstk\": \"120\",\n    \"zzmstk\": \"130\",\n    \"matnr\": \"LY000001\",\n    \"fkimgf\": \"120\",\n    \"fkimgm\": \"130\",\n    \"fkimg\": \"250\",\n    \"netpr\": \"50\",\n    \"netwr\": \"12500\",\n    \"zzcustype\": \"\",\n    \"zzsaltype\": \"\",\n    \"bstnk\": \"\",\n    \"venum\": \"\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw",
+            "description": "Flat query string map — align field names with `buildCullSaleFlat` in code."
+          }
+        },
+        {
+          "name": "POST raw — zbird_receipt (breafru)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zbird_receipt\",\n  \"params\": {\n    \"breafru\": \"[{\\\"werks\\\":\\\"1902\\\",\\\"aufnr\\\":\\\"\\\",\\\"matnr\\\":\\\"LY000001\\\",\\\"bldat\\\":\\\"05/05/2026\\\",\\\"zzfbwt\\\":\\\"1850\\\",\\\"zzmbwt\\\":\\\"2100\\\",\\\"menge\\\":\\\"3950\\\"}]\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw",
+            "description": "Bird weights / receipt line; same endpoint used for `bird_weighing` outbound."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+{
+  "info": {
+    "_postman_id": "6c3d905f-4b83-41f1-a9a0-9d29ad593a63",
+    "name": "KRISHI Hatchery SAP Live (Auto Sync to Local)",
+    "description": "Shorter hatchery collection. For full step-by-step (login + chain + SAP GET + local save with rich bodies), import **KRISHI-Hatchery-End-to-End.postman_collection.json** in the same folder.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "username", "value": "hatchery_admin" },
+    { "key": "password", "value": "Krishi@123" },
+    { "key": "category", "value": "Hatchery" },
+    { "key": "token", "value": "" },
+    { "key": "werks", "value": "1803" },
+    { "key": "lifnr", "value": "C008273" },
+    { "key": "po_no", "value": "7500000106" },
+    { "key": "flock_no", "value": "" },
+    { "key": "sap_date", "value": "2026-05-08" },
+    { "key": "matnr", "value": "EG000001" },
+    { "key": "local_entry_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "00 Login",
+      "item": [
+        {
+          "name": "POST /api/admin/login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/admin/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"category\": \"{{category}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j = {};",
+                  "try { j = pm.response.json(); } catch (e) {}",
+                  "const t = j.token || j.data?.token || j.access_token || '';",
+                  "if (t) pm.collectionVariables.set('token', t);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 Hatchery Plants",
+      "item": [
+        {
+          "name": "GET /api/hatchery-live/plants",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/plants"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Chain - Plant > Supplier > PO > Flock",
+      "item": [
+        {
+          "name": "GET /api/hatchery-live/suppliers (after plant)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/suppliers?werks={{werks}}"
+          }
+        },
+        {
+          "name": "GET /api/hatchery-live/po-list",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/po-list?werks={{werks}}&lifnr={{lifnr}}"
+          }
+        },
+        {
+          "name": "GET /api/hatchery-live/flocks",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/flocks?werks={{werks}}&lifnr={{lifnr}}&po_no={{po_no}}"
+          }
+        },
+        {
+          "name": "GET /api/hatchery-live/flock-details",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/flock-details?werks={{werks}}&lifnr={{lifnr}}&po_no={{po_no}}&flock_no={{flock_no}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Egg Receipt",
+      "item": [
+        {
+          "name": "GET /api/hatchery-live/egg-receipt",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/egg-receipt?werks={{werks}}&lifnr={{lifnr}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Grading to Setting",
+      "item": [
+        {
+          "name": "GET /api/hatchery-live/grade-setting",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/grade-setting?werks={{werks}}&lifnr={{lifnr}}&date={{sap_date}}&matnr={{matnr}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04b Reason master (grading / setting / pullout)",
+      "item": [
+        {
+          "name": "GET /api/hatchery-live/reasons (module=all)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/reasons?module=all"
+          }
+        },
+        {
+          "name": "GET /api/hatchery-live/reasons?module=setting",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/reasons?module=setting"
+          }
+        },
+        {
+          "name": "POST /api/hatchery-live/reasons (save master reason — JWT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/hatchery-live/reasons",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason_id\": \"R-CUSTOM-01\",\n  \"reason_name\": \"My new reason\",\n  \"module\": \"setting\",\n  \"sort_order\": 99\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Transfer to Pullout",
+      "item": [
+        {
+          "name": "GET /api/hatchery-live/transfer-pullout",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/transfer-pullout?werks={{werks}}&lifnr={{lifnr}}&date={{sap_date}}&matnr={{matnr}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Medicine Entry",
+      "item": [
+        {
+          "name": "GET /api/hatchery-live/medicine-issue",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/medicine-issue?werks={{werks}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Local save (DB only, no SAP push yet)",
+      "item": [
+        {
+          "name": "POST save egg-receipt",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/hatchery-live/local/egg-receipt/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"werks\": \"{{werks}}\",\n  \"lifnr\": \"{{lifnr}}\",\n  \"po_no\": \"{{po_no}}\",\n  \"flock_no\": \"{{flock_no}}\",\n  \"entry_date\": \"{{sap_date}}\",\n  \"form\": {\n    \"notes\": \"from mobile\",\n    \"lines\": []\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "try {",
+                  "  const j = pm.response.json();",
+                  "  const id = j.data && j.data.id;",
+                  "  if (id) pm.collectionVariables.set('local_entry_id', String(id));",
+                  "} catch (e) {}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET list egg-receipt local",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/local/egg-receipt?werks={{werks}}&lifnr={{lifnr}}&limit=50"
+          }
+        },
+        {
+          "name": "GET one egg-receipt local by id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/hatchery-live/local/egg-receipt/{{local_entry_id}}"
+          }
+        },
+        {
+          "name": "POST save grade-setting",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/hatchery-live/local/grade-setting/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"werks\": \"{{werks}}\",\n  \"lifnr\": \"{{lifnr}}\",\n  \"matnr\": \"{{matnr}}\",\n  \"entry_date\": \"{{sap_date}}\",\n  \"form\": { \"grades\": [] }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST save transfer-pullout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/hatchery-live/local/transfer-pullout/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"werks\": \"{{werks}}\",\n  \"lifnr\": \"{{lifnr}}\",\n  \"entry_date\": \"{{sap_date}}\",\n  \"form\": { \"transfers\": [] }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST save medicine-issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/hatchery-live/local/medicine-issue/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"werks\": \"{{werks}}\",\n  \"entry_date\": \"{{sap_date}}\",\n  \"form\": { \"items\": [] }\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

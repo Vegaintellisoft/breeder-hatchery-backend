@@ -1,0 +1,664 @@
+{
+  "info": {
+    "name": "KRISHI — Egg Collection v2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "flock_no",
+      "value": "LY000001"
+    },
+    {
+      "key": "plant_code",
+      "value": "1902"
+    },
+    {
+      "key": "shed_id",
+      "value": "1"
+    },
+    {
+      "key": "part_id",
+      "value": "1"
+    },
+    {
+      "key": "line_id",
+      "value": "1"
+    },
+    {
+      "key": "entry_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔽 Step 1 — Dropdowns",
+      "item": [
+        {
+          "name": "GET Dropdowns (plant+flock)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/dropdowns?plant_code={{plant_code}}&flock_no={{flock_no}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "dropdowns"
+              ],
+              "query": [
+                {
+                  "key": "plant_code",
+                  "value": "{{plant_code}}"
+                },
+                {
+                  "key": "flock_no",
+                  "value": "{{flock_no}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Sheds for Plant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/sheds?plant_code={{plant_code}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "sheds"
+              ],
+              "query": [
+                {
+                  "key": "plant_code",
+                  "value": "{{plant_code}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Parts for Shed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/parts?shed_id={{shed_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "parts"
+              ],
+              "query": [
+                {
+                  "key": "shed_id",
+                  "value": "{{shed_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Lines for Part",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/lines?part_id={{part_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "lines"
+              ],
+              "query": [
+                {
+                  "key": "part_id",
+                  "value": "{{part_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💾 Step 2 — Save Entry",
+      "item": [
+        {
+          "name": "POST Save — All 7 Time Slots",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/save",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "save"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"flock_no\": \"LY000001\",\n  \"plant_code\": \"1902\",\n  \"collection_date\": \"2026-04-10\",\n  \"age_days\": 280,\n  \"season\": \"Summer\",\n  \"shed_id\": 1,\n  \"part_id\": 1,\n  \"line_id\": 1,\n  \"slots\": [\n    {\n      \"schedule_time\": \"7-8\",\n      \"table_egg\": 10,\n      \"jumbo_egg\": 5,\n      \"crack_egg\": 2,\n      \"waste_reject_egg\": 1,\n      \"hatching_egg\": 20,\n      \"egg_weight\": 58.5\n    },\n    {\n      \"schedule_time\": \"9-10\",\n      \"table_egg\": 8,\n      \"jumbo_egg\": 4,\n      \"crack_egg\": 1,\n      \"waste_reject_egg\": 0,\n      \"hatching_egg\": 18,\n      \"egg_weight\": 57.2\n    },\n    {\n      \"schedule_time\": \"11-12\",\n      \"table_egg\": 12,\n      \"jumbo_egg\": 6,\n      \"crack_egg\": 3,\n      \"waste_reject_egg\": 1,\n      \"hatching_egg\": 22,\n      \"egg_weight\": 59\n    },\n    {\n      \"schedule_time\": \"1-2\",\n      \"table_egg\": 9,\n      \"jumbo_egg\": 3,\n      \"crack_egg\": 1,\n      \"waste_reject_egg\": 0,\n      \"hatching_egg\": 17,\n      \"egg_weight\": 58\n    },\n    {\n      \"schedule_time\": \"3-4\",\n      \"table_egg\": 7,\n      \"jumbo_egg\": 2,\n      \"crack_egg\": 1,\n      \"waste_reject_egg\": 0,\n      \"hatching_egg\": 15,\n      \"egg_weight\": 57.5\n    },\n    {\n      \"schedule_time\": \"5-6\",\n      \"table_egg\": 5,\n      \"jumbo_egg\": 1,\n      \"crack_egg\": 0,\n      \"waste_reject_egg\": 0,\n      \"hatching_egg\": 10,\n      \"egg_weight\": 56.8\n    },\n    {\n      \"schedule_time\": \"7-8pm\",\n      \"table_egg\": 4,\n      \"jumbo_egg\": 1,\n      \"crack_egg\": 0,\n      \"waste_reject_egg\": 0,\n      \"hatching_egg\": 8,\n      \"egg_weight\": 56\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "POST Save — Single Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/save",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "save"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"flock_no\": \"LY000001\",\n  \"plant_code\": \"1902\",\n  \"collection_date\": \"2026-04-11\",\n  \"age_days\": 281,\n  \"season\": \"Summer\",\n  \"shed_id\": 1,\n  \"part_id\": 1,\n  \"line_id\": 1,\n  \"slots\": [\n    {\n      \"schedule_time\": \"7-8\",\n      \"table_egg\": 10,\n      \"jumbo_egg\": 5,\n      \"crack_egg\": 2,\n      \"waste_reject_egg\": 1,\n      \"hatching_egg\": 20,\n      \"egg_weight\": 58.5\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "POST Save — Update (upsert existing)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/save",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "save"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"flock_no\": \"LY000001\",\n  \"plant_code\": \"1902\",\n  \"collection_date\": \"2026-04-10\",\n  \"age_days\": 280,\n  \"season\": \"Summer\",\n  \"shed_id\": 1,\n  \"part_id\": 1,\n  \"line_id\": 1,\n  \"slots\": [\n    {\n      \"schedule_time\": \"7-8\",\n      \"table_egg\": 15,\n      \"jumbo_egg\": 7,\n      \"crack_egg\": 3,\n      \"waste_reject_egg\": 2,\n      \"hatching_egg\": 25,\n      \"egg_weight\": 59.5\n    },\n    {\n      \"schedule_time\": \"9-10\",\n      \"table_egg\": 12,\n      \"jumbo_egg\": 5,\n      \"crack_egg\": 2,\n      \"waste_reject_egg\": 1,\n      \"hatching_egg\": 22,\n      \"egg_weight\": 58\n    }\n  ]\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Step 3 — Get Entry (pre-fill edit)",
+      "item": [
+        {
+          "name": "GET Entry — by flock+date+shed+part+line",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/entry?flock_no=LY000001&date=2026-04-10&shed_id={{shed_id}}&part_id={{part_id}}&line_id={{line_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "entry"
+              ],
+              "query": [
+                {
+                  "key": "flock_no",
+                  "value": "LY000001"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-04-10"
+                },
+                {
+                  "key": "shed_id",
+                  "value": "{{shed_id}}"
+                },
+                {
+                  "key": "part_id",
+                  "value": "{{part_id}}"
+                },
+                {
+                  "key": "line_id",
+                  "value": "{{line_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Entry — by flock+date only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/entry?flock_no=LY000001&date=2026-04-10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "entry"
+              ],
+              "query": [
+                {
+                  "key": "flock_no",
+                  "value": "LY000001"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-04-10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Step 4 — List (Admin Grid)",
+      "item": [
+        {
+          "name": "List — All",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/list?limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — By Flock",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/list?flock_no=LY000001&limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "flock_no",
+                  "value": "LY000001"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — By Plant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/list?plant_code=1902&limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "plant_code",
+                  "value": "1902"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — By Date",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/list?date=2026-04-10&limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-04-10"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/list?from_date=2026-04-01&to_date=2026-04-15&limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "from_date",
+                  "value": "2026-04-01"
+                },
+                {
+                  "key": "to_date",
+                  "value": "2026-04-15"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Flock+DateRange",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/list?flock_no=LY000001&from_date=2026-04-01&to_date=2026-04-15&limit=20&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "flock_no",
+                  "value": "LY000001"
+                },
+                {
+                  "key": "from_date",
+                  "value": "2026-04-01"
+                },
+                {
+                  "key": "to_date",
+                  "value": "2026-04-15"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List — Pagination Page 2",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/list?limit=20&offset=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🗑️ Delete",
+      "item": [
+        {
+          "name": "DELETE Entry",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/egg-collection/v2/{{entry_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "egg-collection",
+                "v2",
+                "{{entry_id}}"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

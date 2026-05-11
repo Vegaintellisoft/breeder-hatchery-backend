@@ -1,0 +1,1011 @@
+{
+  "info": {
+    "_postman_id": "krishi-sap-mobile-admin-only-001",
+    "name": "KRISHI SAP Sync - Mobile + Admin Only",
+    "description": "Single focused flow only for: local save (mobile), mobile SAP sync (today), and admin unsynced/bulk sync for feeding.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "mobile_username", "value": "superadmin" },
+    { "key": "mobile_password", "value": "Krishi@123" },
+    { "key": "admin_username", "value": "superadmin" },
+    { "key": "admin_password", "value": "Krishi@123" },
+    { "key": "mobile_token", "value": "" },
+    { "key": "admin_token", "value": "" },
+    { "key": "flock_no", "value": "LY000001" },
+    { "key": "plant_code", "value": "1902" },
+    { "key": "order_no", "value": "000010007311" },
+    { "key": "feed_item_id", "value": "13" },
+    { "key": "feed_item_name", "value": "CALCITE GRIT (6MM)" },
+    { "key": "feed_uom", "value": "TO" },
+    { "key": "feed_qty_male", "value": "12.5" },
+    { "key": "feed_qty_female", "value": "18" },
+    { "key": "male_weight", "value": "1850" },
+    { "key": "female_weight", "value": "2100" },
+    { "key": "feeding_record_id", "value": "2" },
+    { "key": "limit_per_module", "value": "25" },
+    { "key": "sap_aufnr", "value": "000010007311" },
+    { "key": "sap_matnr", "value": "FR000003" },
+    { "key": "sap_meins", "value": "TO" },
+    { "key": "sap_lgort", "value": "0012" },
+    { "key": "sap_batch", "value": "BD-8A" },
+    { "key": "sap_bldat_dmy", "value": "05/05/2026" },
+    { "key": "sap_bldat_ymd", "value": "20260505" },
+    { "key": "egg_record_id", "value": "1" },
+    { "key": "mortality_record_id", "value": "1" },
+    { "key": "cull_kill_record_id", "value": "1" },
+    { "key": "cull_sales_record_id", "value": "1" },
+    { "key": "bird_weighing_record_id", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "00 Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('health 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/health" }
+        }
+      ]
+    },
+    {
+      "name": "01 Login",
+      "item": [
+        {
+          "name": "POST /api/admin/login (mobile user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('mobile login 200', function(){ pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('mobile token exists', function(){ pm.expect(!!j.token).to.eql(true); });",
+                  "if (j.token) pm.collectionVariables.set('mobile_token', j.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{mobile_username}}\",\n  \"password\": \"{{mobile_password}}\",\n  \"category\": \"Breeder\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/login"
+          }
+        },
+        {
+          "name": "POST /api/admin/login (admin user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('admin login 200', function(){ pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('admin token exists', function(){ pm.expect(!!j.token).to.eql(true); });",
+                  "if (j.token) pm.collectionVariables.set('admin_token', j.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\",\n  \"category\": \"Breeder\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Mobile - Local Save + SAP Sync Today",
+      "item": [
+        {
+          "name": "POST /api/daily-activity/feeding/save (local save)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const now = new Date();",
+                  "const y = now.getFullYear();",
+                  "const m = String(now.getMonth()+1).padStart(2,'0');",
+                  "const d = String(now.getDate()).padStart(2,'0');",
+                  "pm.collectionVariables.set('today_ymd', `${y}-${m}-${d}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('local save status', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201]); });",
+                  "var j = pm.response.json();",
+                  "pm.test('local save success', function(){ pm.expect(j.success).to.eql(true); });",
+                  "if (j.saved && j.saved.length && j.saved[0].id) pm.collectionVariables.set('feeding_record_id', String(j.saved[0].id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\": \"{{flock_no}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"feed_date\": \"{{today_ymd}}\",\n  \"order_no\": \"{{order_no}}\",\n  \"batch_no\": \"{{sap_batch}}\",\n  \"feed_type\": \"feed\",\n  \"items\": [\n    {\n      \"sap_matnr\": \"{{sap_matnr}}\",\n      \"lgort\": \"{{sap_lgort}}\",\n      \"qty_issued_male\": {{feed_qty_male}},\n      \"qty_issued_female\": {{feed_qty_female}},\n      \"cum_feed\": 250\n    }\n  ],\n  \"male_weight\": {{male_weight}},\n  \"female_weight\": {{female_weight}}\n}"
+            },
+            "url": "{{baseUrl}}/api/daily-activity/feeding/save"
+          }
+        },
+        {
+          "name": "POST /api/daily-activity/feeding/save (stock exceeded -> 422)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('save blocks when stock is less', function(){ pm.response.to.have.status(422); });",
+                  "var j = pm.response.json();",
+                  "pm.test('error message contains stock quantity', function(){ pm.expect(String(j.message||'').toLowerCase()).to.include('stock quantity'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\": \"{{flock_no}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"feed_date\": \"{{today_ymd}}\",\n  \"order_no\": \"{{order_no}}\",\n  \"batch_no\": \"{{sap_batch}}\",\n  \"feed_type\": \"feed\",\n  \"items\": [\n    {\n      \"sap_matnr\": \"{{sap_matnr}}\",\n      \"lgort\": \"{{sap_lgort}}\",\n      \"qty_issued_male\": 999999,\n      \"qty_issued_female\": 999999,\n      \"cum_feed\": 0\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/api/daily-activity/feeding/save"
+          }
+        },
+        {
+          "name": "GET /api/sap-sync/status (feeding)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function(){ pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('status success', function(){ pm.expect(j.success).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=feeding&record_id={{feeding_record_id}}"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/mobile-latest (no record_id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('mobile latest response', function(){ pm.expect(pm.response.code).to.be.oneOf([200,422,502,403,409]); });",
+                  "var j = pm.response.json();",
+                  "pm.test('mobile latest has success flag', function(){ pm.expect(j.hasOwnProperty('success')).to.eql(true); });",
+                  "if (j.record_id) pm.collectionVariables.set('feeding_record_id', String(j.record_id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"feeding\"\n}" },
+            "url": "{{baseUrl}}/api/sap-sync/mobile-latest"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/push (mobile dry push)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('push response received', function(){ pm.expect(pm.response.code).to.be.oneOf([200,422,502,403]); });",
+                  "var j = pm.response.json();",
+                  "pm.test('push has success flag', function(){ pm.expect(j.hasOwnProperty('success')).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"feeding\",\n  \"record_id\": {{feeding_record_id}}\n}" },
+            "url": "{{baseUrl}}/api/sap-sync/push"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync (mobile push + mark synced)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('sync response received', function(){ pm.expect(pm.response.code).to.be.oneOf([200,422,502,403]); });",
+                  "var j = pm.response.json();",
+                  "pm.test('sync has success flag', function(){ pm.expect(j.hasOwnProperty('success')).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"feeding\",\n  \"record_id\": {{feeding_record_id}}\n}" },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Admin Panel - Unsynced + Bulk Sync",
+      "item": [
+        {
+          "name": "GET /api/sap-sync/unsynced?modules=feeding",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('unsynced 200', function(){ pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('unsynced success', function(){ pm.expect(j.success).to.eql(true); });",
+                  "if (j.data && j.data.feeding && j.data.feeding.length && j.data.feeding[0].id) pm.collectionVariables.set('feeding_record_id', String(j.data.feeding[0].id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/unsynced?plant_code={{plant_code}}&limit=30&modules=feeding"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/push-unsynced (feeding only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('bulk sync response', function(){ pm.expect(pm.response.code).to.be.oneOf([200,500]); });",
+                  "var j = pm.response.json();",
+                  "pm.test('bulk has counters', function(){ pm.expect(j.hasOwnProperty('succeeded_count')).to.eql(true); pm.expect(j.hasOwnProperty('failed_count')).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plant_code\": \"{{plant_code}}\",\n  \"limit_per_module\": {{limit_per_module}},\n  \"modules\": [\"feeding\"]\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-unsynced"
+          }
+        },
+        {
+          "name": "GET /api/sap-sync/status (post-admin-check)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status check response', function(){ pm.expect(pm.response.code).to.be.oneOf([200,404]); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=feeding&record_id={{feeding_record_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 SAP Debug Raw (Feeding Only)",
+      "item": [
+        {
+          "name": "POST /api/sap-sync/push-raw - zfeed_med (DD/MM/YYYY)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('raw debug response', function(){ pm.expect(pm.response.code).to.be.oneOf([200,502]); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zfeed_med\",\n  \"params\": {\n    \"dmfdet\": \"[{\\\"werks\\\":\\\"{{plant_code}}\\\",\\\"aufnr\\\":\\\"{{sap_aufnr}}\\\",\\\"plnbez\\\":\\\"{{flock_no}}\\\",\\\"batch\\\":\\\"{{sap_batch}}\\\",\\\"hatchdt\\\":\\\"{{sap_bldat_dmy}}\\\",\\\"bldat\\\":\\\"{{sap_bldat_dmy}}\\\",\\\"budat\\\":\\\"{{sap_bldat_dmy}}\\\",\\\"stock\\\":\\\"0.00\\\",\\\"zzage\\\":\\\"0.00\\\",\\\"zzfbwt\\\":\\\"0.00\\\",\\\"zzmbwt\\\":\\\"0.00\\\",\\\"zzfstk\\\":\\\"0.00\\\",\\\"zzmstk\\\":\\\"0.00\\\"}]\",\n    \"feeddet\": \"[{\\\"matnr\\\":\\\"{{sap_matnr}}\\\",\\\"maktx\\\":\\\"{{feed_item_name}}\\\",\\\"uom\\\":\\\"{{sap_meins}}\\\",\\\"lgort\\\":\\\"{{sap_lgort}}\\\",\\\"stock\\\":\\\"0\\\",\\\"erfmg\\\":\\\"30.50\\\"}]\",\n    \"meddet\": \"[{\\\"matnr\\\":\\\"\\\",\\\"maktx\\\":\\\"\\\",\\\"uom\\\":\\\"\\\",\\\"lgort\\\":\\\"\\\",\\\"stock\\\":\\\"\\\",\\\"erfmg\\\":\\\"\\\"}]\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/push-raw - zfeed_med (YYYYMMDD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('raw debug response', function(){ pm.expect(pm.response.code).to.be.oneOf([200,502]); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zfeed_med\",\n  \"params\": {\n    \"dmfdet\": \"[{\\\"werks\\\":\\\"{{plant_code}}\\\",\\\"aufnr\\\":\\\"{{sap_aufnr}}\\\",\\\"plnbez\\\":\\\"{{flock_no}}\\\",\\\"batch\\\":\\\"{{sap_batch}}\\\",\\\"hatchdt\\\":\\\"{{sap_bldat_ymd}}\\\",\\\"bldat\\\":\\\"{{sap_bldat_ymd}}\\\",\\\"budat\\\":\\\"{{sap_bldat_ymd}}\\\",\\\"stock\\\":\\\"0.00\\\",\\\"zzage\\\":\\\"0.00\\\",\\\"zzfbwt\\\":\\\"0.00\\\",\\\"zzmbwt\\\":\\\"0.00\\\",\\\"zzfstk\\\":\\\"0.00\\\",\\\"zzmstk\\\":\\\"0.00\\\"}]\",\n    \"feeddet\": \"[{\\\"matnr\\\":\\\"{{sap_matnr}}\\\",\\\"maktx\\\":\\\"{{feed_item_name}}\\\",\\\"uom\\\":\\\"{{sap_meins}}\\\",\\\"lgort\\\":\\\"{{sap_lgort}}\\\",\\\"stock\\\":\\\"0\\\",\\\"erfmg\\\":\\\"30.50\\\"}]\",\n    \"meddet\": \"[{\\\"matnr\\\":\\\"\\\",\\\"maktx\\\":\\\"\\\",\\\"uom\\\":\\\"\\\",\\\"lgort\\\":\\\"\\\",\\\"stock\\\":\\\"\\\",\\\"erfmg\\\":\\\"\\\"}]\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/push-raw - zfeed_med (Medicine line, array format)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint\": \"zfeed_med\",\n  \"params\": {\n    \"dmfdet\": \"[{\\\"werks\\\":\\\"{{plant_code}}\\\",\\\"aufnr\\\":\\\"{{sap_aufnr}}\\\",\\\"plnbez\\\":\\\"{{flock_no}}\\\",\\\"batch\\\":\\\"\\\",\\\"hatchdt\\\":\\\"{{sap_bldat_dmy}}\\\",\\\"bldat\\\":\\\"{{sap_bldat_dmy}}\\\",\\\"budat\\\":\\\"{{sap_bldat_dmy}}\\\",\\\"stock\\\":\\\"0.00\\\",\\\"zzage\\\":\\\"0.00\\\",\\\"zzfbwt\\\":\\\"0.00\\\",\\\"zzmbwt\\\":\\\"0.00\\\",\\\"zzfstk\\\":\\\"0.00\\\",\\\"zzmstk\\\":\\\"0.00\\\"}]\",\n    \"feeddet\": \"[{\\\"matnr\\\":\\\"\\\",\\\"maktx\\\":\\\"\\\",\\\"uom\\\":\\\"\\\",\\\"stock\\\":\\\"\\\",\\\"erfmg\\\":\\\"\\\"}]\",\n    \"meddet\": \"[{\\\"matnr\\\":\\\"MD000125\\\",\\\"maktx\\\":\\\"AQUAMAX (5 LITTER)\\\",\\\"uom\\\":\\\"L\\\",\\\"stock\\\":\\\"0\\\",\\\"erfmg\\\":\\\"5\\\"}]\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-raw"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Materials + Stock APIs",
+      "item": [
+        {
+          "name": "GET /api/daily-activity/sap/materials?type=feed",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/sap/materials?plant_code={{plant_code}}&type=feed"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/feeding/items?type=feed",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/items?type=feed&plant_code={{plant_code}}"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/feeding/items?type=water",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/items?type=water&plant_code={{plant_code}}"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/feeding/items?type=medicine",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/items?type=medicine&plant_code={{plant_code}}"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/feeding/stock?type=feed",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/stock?plant_code={{plant_code}}&type=feed"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/feeding/stock?type=medicine",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/stock?plant_code={{plant_code}}&type=medicine"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Egg Grading - Local Save + SAP Sync",
+      "item": [
+        {
+          "name": "POST /api/egg-collection/v2/save (local)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\": \"{{flock_no}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"order_no\": \"{{order_no}}\",\n  \"collection_date\": \"{{today_ymd}}\",\n  \"age_days\": 280,\n  \"season\": \"Summer\",\n  \"slots\": [\n    {\n      \"schedule_time\": \"7-8\",\n      \"egg_weight\": 58.5,\n      \"rows\": [\n        {\n          \"shed_id\": 1,\n          \"part_id\": 1,\n          \"line_id\": 1,\n          \"table_egg\": 10,\n          \"jumbo_egg\": 5,\n          \"crack_egg\": 2,\n          \"waste_reject_egg\": 1,\n          \"hatching_egg\": 20\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/api/egg-collection/v2/save"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/mobile-latest (egg_collection)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"egg_collection\"\n}" },
+            "url": "{{baseUrl}}/api/sap-sync/mobile-latest"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync (egg_collection by id)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"egg_collection\",\n  \"record_id\": {{egg_record_id}}\n}" },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Cull Sales - Local Save + SAP Sync",
+      "item": [
+        {
+          "name": "POST /api/cull-sales/save (local)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\": \"{{flock_no}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"order_no\": \"{{order_no}}\",\n  \"entry_date\": \"{{today_ymd}}\",\n  \"customer_type\": \"Retail\",\n  \"dc_no\": \"DC-TEST-001\",\n  \"sales_type\": \"Direct Sale\",\n  \"transport_by\": \"Own Vehicle\",\n  \"vehicle_no\": \"TN01AB1234\",\n  \"order_by\": \"Manager Name\",\n  \"dispatched_by\": \"Supervisor Name\",\n  \"rate\": 150,\n  \"bill_value\": 1000,\n  \"gross_value\": 1000,\n  \"net_weight_male\": 5,\n  \"net_weight_female\": 7\n}"
+            },
+            "url": "{{baseUrl}}/api/cull-sales/save"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync (cull_sales by id)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"cull_sales\",\n  \"record_id\": {{cull_sales_record_id}}\n}" },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Bird Weighing - Local Save + SAP Sync",
+      "item": [
+        {
+          "name": "POST /api/bird-weighing/save (local)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entry_date\": \"{{today_ymd}}\",\n  \"hen_type_id\": 1,\n  \"gender\": \"male\",\n  \"actual_weight_g\": 2000,\n  \"sample_weight_g\": 1900,\n  \"schedule\": \"Weekly\"\n}"
+            },
+            "url": "{{baseUrl}}/api/bird-weighing/save"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync (bird_weighing by id)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"bird_weighing\",\n  \"record_id\": {{bird_weighing_record_id}}\n}" },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Mortality + Cull Kill - Local Save + SAP Sync",
+      "item": [
+        {
+          "name": "POST /api/farm/mortality/save (local, form-data)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "flock_no", "value": "{{flock_no}}", "type": "text" },
+                { "key": "plant_code", "value": "{{plant_code}}", "type": "text" },
+                { "key": "order_no", "value": "{{order_no}}", "type": "text" },
+                { "key": "shed_id", "value": "1", "type": "text" },
+                { "key": "part_id", "value": "1", "type": "text" },
+                { "key": "line_id", "value": "1", "type": "text" },
+                { "key": "entry_date", "value": "{{today_ymd}}", "type": "text" },
+                { "key": "schedule", "value": "Morning", "type": "text" },
+                { "key": "reasons", "value": "[{\"reason_id\":1,\"reason_name\":\"Test\",\"male_count\":1,\"female_count\":1}]", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/farm/mortality/save"
+          }
+        },
+        {
+          "name": "POST /api/farm/cull-kill/save (local, form-data)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "flock_no", "value": "{{flock_no}}", "type": "text" },
+                { "key": "plant_code", "value": "{{plant_code}}", "type": "text" },
+                { "key": "order_no", "value": "{{order_no}}", "type": "text" },
+                { "key": "shed_id", "value": "1", "type": "text" },
+                { "key": "part_id", "value": "1", "type": "text" },
+                { "key": "line_id", "value": "1", "type": "text" },
+                { "key": "entry_date", "value": "{{today_ymd}}", "type": "text" },
+                { "key": "schedule", "value": "Morning", "type": "text" },
+                { "key": "reasons", "value": "[{\"reason_id\":1,\"reason_name\":\"Test\",\"male_count\":1,\"female_count\":1}]", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/farm/cull-kill/save"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync (mortality by id)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"mortality\",\n  \"record_id\": {{mortality_record_id}}\n}" },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync (cull_kill by id)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"cull_kill\",\n  \"record_id\": {{cull_kill_record_id}}\n}" },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 Run Order - End To End",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is success', function () {",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+              "});",
+              "",
+              "let json = {};",
+              "try { json = pm.response.json(); } catch (e) {}",
+              "if (json && Object.prototype.hasOwnProperty.call(json, 'success')) {",
+              "  pm.test('Response success is true', function () {",
+              "    pm.expect(json.success).to.eql(true);",
+              "  });",
+              "}"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Step 01 - Health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "Step 02 - Login Mobile",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{mobile_username}}\",\n  \"password\": \"{{mobile_password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Mobile login status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "const token = res?.token || res?.data?.token || res?.access_token;",
+                  "pm.test('Mobile token present', function () {",
+                  "  pm.expect(token).to.be.a('string').and.not.empty;",
+                  "});",
+                  "if (token) pm.collectionVariables.set('mobile_token', token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Step 03 - Get Feed Materials",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/sap/materials?plant_code={{plant_code}}&type=feed"
+          }
+        },
+        {
+          "name": "Step 04 - Get Feed Stock",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/stock?plant_code={{plant_code}}&type=feed"
+          }
+        },
+        {
+          "name": "Step 05 - Save Feeding (Local)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\": \"{{flock_no}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"order_no\": \"{{order_no}}\",\n  \"batch_no\": \"{{sap_batch}}\",\n  \"feed_date\": \"{{today_ymd}}\",\n  \"feed_type\": \"feed\",\n  \"items\": [\n    {\n      \"sap_matnr\": \"{{sap_matnr}}\",\n      \"lgort\": \"{{sap_lgort}}\",\n      \"qty_issued_male\": 5,\n      \"qty_issued_female\": 4,\n      \"cum_feed\": 9\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/api/daily-activity/feeding/save"
+          }
+        },
+        {
+          "name": "Step 06 - Sync Feeding Mobile Latest",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"feeding\"\n}" },
+            "url": "{{baseUrl}}/api/sap-sync/mobile-latest"
+          }
+        },
+        {
+          "name": "Step 07 - Save Egg Collection (Local)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\": \"{{flock_no}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"order_no\": \"{{order_no}}\",\n  \"collection_date\": \"{{today_ymd}}\",\n  \"age_days\": 280,\n  \"season\": \"Summer\",\n  \"slots\": [\n    {\n      \"schedule_time\": \"7-8\",\n      \"egg_weight\": 58.5,\n      \"rows\": [\n        {\n          \"shed_id\": 1,\n          \"part_id\": 1,\n          \"line_id\": 1,\n          \"table_egg\": 10,\n          \"jumbo_egg\": 5,\n          \"crack_egg\": 2,\n          \"waste_reject_egg\": 1,\n          \"hatching_egg\": 20\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/api/egg-collection/v2/save"
+          }
+        },
+        {
+          "name": "Step 08 - Sync Egg Mobile Latest",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"egg_collection\"\n}" },
+            "url": "{{baseUrl}}/api/sap-sync/mobile-latest"
+          }
+        },
+        {
+          "name": "Step 09 - Save Mortality (Local)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "flock_no", "value": "{{flock_no}}", "type": "text" },
+                { "key": "plant_code", "value": "{{plant_code}}", "type": "text" },
+                { "key": "order_no", "value": "{{order_no}}", "type": "text" },
+                { "key": "shed_id", "value": "1", "type": "text" },
+                { "key": "part_id", "value": "1", "type": "text" },
+                { "key": "line_id", "value": "1", "type": "text" },
+                { "key": "entry_date", "value": "{{today_ymd}}", "type": "text" },
+                { "key": "schedule", "value": "Morning", "type": "text" },
+                { "key": "reasons", "value": "[{\"reason_id\":1,\"reason_name\":\"Test\",\"male_count\":1,\"female_count\":1}]", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/farm/mortality/save"
+          }
+        },
+        {
+          "name": "Step 10 - Save Cull Kill (Local)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "flock_no", "value": "{{flock_no}}", "type": "text" },
+                { "key": "plant_code", "value": "{{plant_code}}", "type": "text" },
+                { "key": "order_no", "value": "{{order_no}}", "type": "text" },
+                { "key": "shed_id", "value": "1", "type": "text" },
+                { "key": "part_id", "value": "1", "type": "text" },
+                { "key": "line_id", "value": "1", "type": "text" },
+                { "key": "entry_date", "value": "{{today_ymd}}", "type": "text" },
+                { "key": "schedule", "value": "Morning", "type": "text" },
+                { "key": "reasons", "value": "[{\"reason_id\":1,\"reason_name\":\"Test\",\"male_count\":1,\"female_count\":1}]", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/farm/cull-kill/save"
+          }
+        },
+        {
+          "name": "Step 11 - Save Bird Weighing (Local)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entry_date\": \"{{today_ymd}}\",\n  \"hen_type_id\": 1,\n  \"gender\": \"male\",\n  \"actual_weight_g\": 2000,\n  \"sample_weight_g\": 1900,\n  \"schedule\": \"Weekly\"\n}"
+            },
+            "url": "{{baseUrl}}/api/bird-weighing/save"
+          }
+        },
+        {
+          "name": "Step 12 - Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Admin login status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "const token = res?.token || res?.data?.token || res?.access_token;",
+                  "pm.test('Admin token present', function () {",
+                  "  pm.expect(token).to.be.a('string').and.not.empty;",
+                  "});",
+                  "if (token) pm.collectionVariables.set('admin_token', token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Step 13 - Admin Unsynced Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/unsynced?modules=feeding,egg_collection,mortality,cull_kill,cull_sales,bird_weighing"
+          }
+        },
+        {
+          "name": "Step 14 - Admin Bulk Push Unsynced",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modules\": [\"feeding\", \"egg_collection\", \"mortality\", \"cull_kill\", \"cull_sales\", \"bird_weighing\"],\n  \"limit\": 50\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync/push-unsynced"
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 Correct Business Flow (Plant > Order > Flock > Material > Stock > Save > Sync)",
+      "item": [
+        {
+          "name": "01 GET /api/sap-live/plants",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/sap-live/plants"
+          }
+        },
+        {
+          "name": "02 GET /api/sap-live/orders?werks={{plant_code}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/sap-live/orders?module=feeding&werks={{plant_code}}"
+          }
+        },
+        {
+          "name": "03 GET /api/sap-live/flocks?werks={{plant_code}}&aufnr={{order_no}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/sap-live/flocks?module=feeding&werks={{plant_code}}&aufnr={{order_no}}"
+          }
+        },
+        {
+          "name": "04 GET /api/daily-activity/sap/materials?plant_code={{plant_code}}&type=feed",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/sap/materials?plant_code={{plant_code}}&type=feed"
+          }
+        },
+        {
+          "name": "05 GET /api/daily-activity/feeding/items?plant_code={{plant_code}}&type=feed",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/items?plant_code={{plant_code}}&type=feed"
+          }
+        },
+        {
+          "name": "06 GET /api/daily-activity/feeding/stock?plant_code={{plant_code}}&type=feed",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/stock?plant_code={{plant_code}}&type=feed"
+          }
+        },
+        {
+          "name": "06A GET /api/daily-activity/sap/material-stock?plant_code={{plant_code}}&matnr={{sap_matnr}} (lgort dropdown)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{mobile_token}}" }],
+            "url": "{{baseUrl}}/api/daily-activity/sap/material-stock?plant_code={{plant_code}}&matnr={{sap_matnr}}"
+          }
+        },
+        {
+          "name": "07 POST /api/daily-activity/feeding/save (must be <= stock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{mobile_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\": \"{{flock_no}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"order_no\": \"{{order_no}}\",\n  \"batch_no\": \"{{sap_batch}}\",\n  \"feed_date\": \"{{today_ymd}}\",\n  \"feed_type\": \"feed\",\n  \"items\": [\n    {\n      \"sap_matnr\": \"{{sap_matnr}}\",\n      \"lgort\": \"{{sap_lgort}}\",\n      \"qty_issued_male\": 5,\n      \"qty_issued_female\": 4,\n      \"cum_feed\": 9\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/api/daily-activity/feeding/save"
+          }
+        },
+        {
+          "name": "08 POST /api/sap-sync (feeding by record_id)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"feeding\",\n  \"record_id\": {{feeding_record_id}}\n}"
+            },
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        },
+        {
+          "name": "09 GET /api/sap-sync/status?module=feeding&record_id={{feeding_record_id}}",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=feeding&record_id={{feeding_record_id}}"
+          }
+        }
+      ]
+    }
+  ]
+}

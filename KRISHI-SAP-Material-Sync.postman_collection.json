@@ -1,0 +1,227 @@
+{
+  "info": {
+    "name": "KRISHI - SAP Material Master Sync",
+    "_postman_id": "krishi-sap-material-sync-v1",
+    "description": "Fetch SAP material master, sync to local masters, and verify plant-wise item + stock APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "plant_code", "value": "1901", "type": "string" },
+    { "key": "matnr", "value": "MD000003", "type": "string" },
+    { "key": "module", "value": "Breeder", "type": "string" },
+    { "key": "auto_sync", "value": "true", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "SAP Material Fetch",
+      "item": [
+        {
+          "name": "Get SAP Materials (all)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/sap/materials",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "sap", "materials"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get SAP Materials by Plant (required flow)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/sap/materials?plant_code={{plant_code}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "sap", "materials"],
+              "query": [
+                { "key": "plant_code", "value": "{{plant_code}}" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get SAP Materials by Plant + Material",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/sap/materials?plant_code={{plant_code}}&matnr={{matnr}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "sap", "materials"],
+              "query": [
+                { "key": "plant_code", "value": "{{plant_code}}" },
+                { "key": "matnr", "value": "{{matnr}}" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sync SAP to Local Master",
+      "item": [
+        {
+          "name": "Sync All Materials (Plant-wise)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sync_all\": true,\n  \"plant_code\": \"{{plant_code}}\",\n  \"module\": \"{{module}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/sap/sync-to-master",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "sap", "sync-to-master"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sync Single Material",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matnr\": \"{{matnr}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"module\": \"{{module}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/sap/sync-to-master",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "sap", "sync-to-master"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Verify Local Masters and Stock",
+      "item": [
+        {
+          "name": "Feeding Items - Feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/feeding/items?type=feed&plant_code={{plant_code}}&module={{module}}&auto_sync={{auto_sync}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "feeding", "items"],
+              "query": [
+                { "key": "type", "value": "feed" },
+                { "key": "plant_code", "value": "{{plant_code}}" },
+                { "key": "module", "value": "{{module}}" },
+                { "key": "auto_sync", "value": "{{auto_sync}}" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Feeding Items - Medicine",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/feeding/items?type=medicine&plant_code={{plant_code}}&module={{module}}&auto_sync={{auto_sync}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "feeding", "items"],
+              "query": [
+                { "key": "type", "value": "medicine" },
+                { "key": "plant_code", "value": "{{plant_code}}" },
+                { "key": "module", "value": "{{module}}" },
+                { "key": "auto_sync", "value": "{{auto_sync}}" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Plant Stock - Feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/feeding/stock?plant_code={{plant_code}}&type=feed&module={{module}}&auto_sync={{auto_sync}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "feeding", "stock"],
+              "query": [
+                { "key": "plant_code", "value": "{{plant_code}}" },
+                { "key": "type", "value": "feed" },
+                { "key": "module", "value": "{{module}}" },
+                { "key": "auto_sync", "value": "{{auto_sync}}" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Plant Stock - Medicine",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/daily-activity/feeding/stock?plant_code={{plant_code}}&type=medicine&module={{module}}&auto_sync={{auto_sync}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "daily-activity", "feeding", "stock"],
+              "query": [
+                { "key": "plant_code", "value": "{{plant_code}}" },
+                { "key": "type", "value": "medicine" },
+                { "key": "module", "value": "{{module}}" },
+                { "key": "auto_sync", "value": "{{auto_sync}}" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

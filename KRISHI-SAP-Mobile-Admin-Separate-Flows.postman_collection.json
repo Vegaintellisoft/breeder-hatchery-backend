@@ -1,0 +1,313 @@
+{
+  "info": {
+    "_postman_id": "3b85df36-2b57-4ceb-8aeb-f3fe7380ff73",
+    "name": "KRISHI SAP - Mobile + Admin Separate Flows",
+    "description": "Separate flows for Mobile SAP Sync button and Admin panel sync (bulk + grid by id), with module-wise step chains.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "username", "value": "superadmin" },
+    { "key": "password", "value": "Krishi@123" },
+    { "key": "category", "value": "Breeder" },
+    { "key": "token", "value": "" },
+    { "key": "plant_code", "value": "1904" },
+    { "key": "order_no", "value": "190125000135" },
+    { "key": "flock_no", "value": "PL000001" },
+    { "key": "today_ymd", "value": "2026-05-08" },
+    { "key": "sap_batch", "value": "BD-8A" },
+    { "key": "sap_matnr", "value": "FG000096" },
+    { "key": "sap_lgort", "value": "0012" },
+    { "key": "age_days", "value": "584" },
+    { "key": "shed_id", "value": "1" },
+    { "key": "part_id", "value": "1" },
+    { "key": "line_id", "value": "1" },
+    { "key": "feeding_record_id", "value": "" },
+    { "key": "medicine_record_id", "value": "" },
+    { "key": "egg_record_id", "value": "" },
+    { "key": "mortality_record_id", "value": "" },
+    { "key": "cull_kill_record_id", "value": "" },
+    { "key": "cull_sales_record_id", "value": "" },
+    { "key": "bird_weight_record_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "00 Login",
+      "item": [
+        {
+          "name": "POST /api/admin/login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/admin/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"category\": \"{{category}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j = {};",
+                  "try { j = pm.response.json(); } catch(e) {}",
+                  "const t = j.token || j.data?.token || j.access_token || '';",
+                  "if (t) pm.collectionVariables.set('token', t);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 Mobile App Flow (Save then SAP Sync button)",
+      "item": [
+        {
+          "name": "A1 Save Feed Local (mobile)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/daily-activity/feeding/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\": \"{{flock_no}}\",\n  \"plant_code\": \"{{plant_code}}\",\n  \"order_no\": \"{{order_no}}\",\n  \"batch_no\": \"{{sap_batch}}\",\n  \"feed_date\": \"{{today_ymd}}\",\n  \"feed_type\": \"feed\",\n  \"zzage\": {{age_days}},\n  \"male_weight\": 4.65,\n  \"female_weight\": 3.85,\n  \"items\": [\n    {\n      \"sap_matnr\": \"{{sap_matnr}}\",\n      \"lgort\": \"{{sap_lgort}}\",\n      \"qty_issued_male\": 1,\n      \"qty_issued_female\": 1,\n      \"cum_feed\": 2\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j = {};",
+                  "try { j = pm.response.json(); } catch(e) {}",
+                  "const id = j.saved?.[0]?.id || '';",
+                  "if (id) pm.collectionVariables.set('feeding_record_id', String(id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A2 Mobile SAP Sync Button (latest unsynced today) - feeding",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/sap-sync/mobile-latest",
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"feeding\"\n}" }
+          }
+        },
+        {
+          "name": "A3 Mobile SAP Sync Button - egg_collection",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/sap-sync/mobile-latest",
+            "body": { "mode": "raw", "raw": "{\n  \"module\": \"egg_collection\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Admin Panel Flow - Bulk and Grid",
+      "item": [
+        {
+          "name": "B1 Get Unsynced (sap_synced=false)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/sap-sync/unsynced?modules=feeding,egg_collection,mortality,cull_kill,cull_sales,bird_weighing&limit=50"
+          }
+        },
+        {
+          "name": "B2 Admin Bulk Sync All Pending",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/sap-sync/push-unsynced",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plant_code\": \"{{plant_code}}\",\n  \"limit_per_module\": 25,\n  \"modules\": [\"feeding\",\"egg_collection\",\"mortality\",\"cull_kill\",\"cull_sales\",\"bird_weighing\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "B3 Grid Sync by ID (individual row)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/sap-sync",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module\": \"feeding\",\n  \"record_id\": {{feeding_record_id}}\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Feed Module (Step by Step)",
+      "item": [
+        { "name": "C1 Plants", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/plants" } },
+        { "name": "C2 Orders (feeding)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/orders?module=feeding&werks={{plant_code}}" } },
+        { "name": "C3 Flocks (feeding)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/flocks?module=feeding&werks={{plant_code}}&aufnr={{order_no}}" } },
+        {
+          "name": "C4 Save Feed Local",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/daily-activity/feeding/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\":\"{{flock_no}}\",\n  \"plant_code\":\"{{plant_code}}\",\n  \"order_no\":\"{{order_no}}\",\n  \"batch_no\":\"{{sap_batch}}\",\n  \"feed_date\":\"{{today_ymd}}\",\n  \"feed_type\":\"feed\",\n  \"zzage\":{{age_days}},\n  \"male_weight\":4.65,\n  \"female_weight\":3.85,\n  \"items\":[{\"sap_matnr\":\"{{sap_matnr}}\",\"lgort\":\"{{sap_lgort}}\",\"qty_issued_male\":1,\"qty_issued_female\":1,\"cum_feed\":2}]\n}"
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["let j={};try{j=pm.response.json();}catch(e){}","const id=j.saved?.[0]?.id||'';if(id) pm.collectionVariables.set('feeding_record_id', String(id));"] } }]
+        },
+        { "name": "C5 SAP Sync Feed", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/api/sap-sync", "body": { "mode": "raw", "raw": "{\n  \"module\":\"feeding\",\n  \"record_id\":{{feeding_record_id}}\n}" } } }
+      ]
+    },
+    {
+      "name": "04 Medicine Module (Step by Step)",
+      "item": [
+        { "name": "D1 Orders (feeding)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/orders?module=feeding&werks={{plant_code}}" } },
+        { "name": "D2 Flocks (feeding)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/flocks?module=feeding&werks={{plant_code}}&aufnr={{order_no}}" } },
+        {
+          "name": "D3 Save Medicine Local",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/daily-activity/feeding/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\":\"{{flock_no}}\",\n  \"plant_code\":\"{{plant_code}}\",\n  \"order_no\":\"{{order_no}}\",\n  \"batch_no\":\"{{sap_batch}}\",\n  \"feed_date\":\"{{today_ymd}}\",\n  \"feed_type\":\"medicine\",\n  \"items\":[{\"sap_matnr\":\"{{sap_matnr}}\",\"lgort\":\"{{sap_lgort}}\",\"qty_issued_male\":1,\"qty_issued_female\":0,\"cum_feed\":1}]\n}"
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["let j={};try{j=pm.response.json();}catch(e){}","const id=j.saved?.[0]?.id||'';if(id) pm.collectionVariables.set('medicine_record_id', String(id));"] } }]
+        },
+        { "name": "D4 SAP Sync Medicine", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/api/sap-sync", "body": { "mode": "raw", "raw": "{\n  \"module\":\"feeding\",\n  \"record_id\":{{medicine_record_id}}\n}" } } }
+      ]
+    },
+    {
+      "name": "05 Egg Collection Module (Step by Step)",
+      "item": [
+        { "name": "E1 Orders (laying)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/orders?module=laying&werks={{plant_code}}" } },
+        { "name": "E2 Flocks (laying)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/flocks?module=laying&werks={{plant_code}}&aufnr={{order_no}}" } },
+        {
+          "name": "E3 Save Egg Local",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/egg-collection/v2/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\":\"{{flock_no}}\",\n  \"plant_code\":\"{{plant_code}}\",\n  \"order_no\":\"{{order_no}}\",\n  \"collection_date\":\"{{today_ymd}}\",\n  \"age_days\":{{age_days}},\n  \"season\":\"Summer\",\n  \"slots\":[{\"schedule_time\":\"7-8\",\"egg_weight\":58.5,\"rows\":[{\"shed_id\":{{shed_id}},\"part_id\":{{part_id}},\"line_id\":{{line_id}},\"table_egg\":10,\"jumbo_egg\":2,\"crack_egg\":1,\"waste_reject_egg\":0,\"hatching_egg\":15}]}]\n}"
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["let j={};try{j=pm.response.json();}catch(e){}","const id=j.data?.id||'';if(id) pm.collectionVariables.set('egg_record_id', String(id));"] } }]
+        },
+        { "name": "E4 SAP Sync Egg", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/api/sap-sync", "body": { "mode": "raw", "raw": "{\n  \"module\":\"egg_collection\",\n  \"record_id\":{{egg_record_id}}\n}" } } }
+      ]
+    },
+    {
+      "name": "06 Mortality Module (Step by Step)",
+      "item": [
+        { "name": "F1 Orders (mortality)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/orders?module=mortality&werks={{plant_code}}" } },
+        { "name": "F2 Flocks (mortality)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/flocks?module=mortality&werks={{plant_code}}&aufnr={{order_no}}" } },
+        {
+          "name": "F3 Save Mortality Local",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/farm/mortality/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\":\"{{flock_no}}\",\n  \"plant_code\":\"{{plant_code}}\",\n  \"order_no\":\"{{order_no}}\",\n  \"shed_id\":{{shed_id}},\n  \"part_id\":{{part_id}},\n  \"line_id\":{{line_id}},\n  \"entry_date\":\"{{today_ymd}}\",\n  \"schedule\":[{\"slot\":\"morning\",\"male\":1,\"female\":0}],\n  \"reasons\":[{\"reason_name\":\"Test\",\"male\":1,\"female\":0}]\n}"
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["let j={};try{j=pm.response.json();}catch(e){}","const id=j.mortality_id||'';if(id) pm.collectionVariables.set('mortality_record_id', String(id));"] } }]
+        },
+        { "name": "F4 SAP Sync Mortality", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/api/sap-sync", "body": { "mode": "raw", "raw": "{\n  \"module\":\"mortality\",\n  \"record_id\":{{mortality_record_id}}\n}" } } }
+      ]
+    },
+    {
+      "name": "07 Cull Kill Module (Step by Step)",
+      "item": [
+        { "name": "G1 Orders (cull_kill)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/orders?module=cull_kill&werks={{plant_code}}" } },
+        { "name": "G2 Flocks (cull_kill)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/flocks?module=cull_kill&werks={{plant_code}}&aufnr={{order_no}}" } },
+        {
+          "name": "G3 Save Cull Kill Local",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/farm/cull-kill/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\":\"{{flock_no}}\",\n  \"plant_code\":\"{{plant_code}}\",\n  \"order_no\":\"{{order_no}}\",\n  \"shed_id\":{{shed_id}},\n  \"part_id\":{{part_id}},\n  \"line_id\":{{line_id}},\n  \"entry_date\":\"{{today_ymd}}\",\n  \"schedule\":[{\"slot\":\"morning\",\"male\":1,\"female\":0}],\n  \"reasons\":[{\"reason_name\":\"Test\",\"male\":1,\"female\":0}]\n}"
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["let j={};try{j=pm.response.json();}catch(e){}","const id=j.cull_kill_id||'';if(id) pm.collectionVariables.set('cull_kill_record_id', String(id));"] } }]
+        },
+        { "name": "G4 SAP Sync Cull Kill", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/api/sap-sync", "body": { "mode": "raw", "raw": "{\n  \"module\":\"cull_kill\",\n  \"record_id\":{{cull_kill_record_id}}\n}" } } }
+      ]
+    },
+    {
+      "name": "08 Cull Sales Module (Step by Step)",
+      "item": [
+        { "name": "H1 Orders (cull_sale)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/orders?module=cull_sale&werks={{plant_code}}" } },
+        { "name": "H2 Flocks (cull_sale)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sap-live/flocks?module=cull_sale&werks={{plant_code}}&aufnr={{order_no}}" } },
+        {
+          "name": "H3 Save Cull Sales Local",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/cull-sales/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\":\"{{flock_no}}\",\n  \"plant_code\":\"{{plant_code}}\",\n  \"order_no\":\"{{order_no}}\",\n  \"entry_date\":\"{{today_ymd}}\",\n  \"shed_id\":{{shed_id}},\n  \"part_id\":{{part_id}},\n  \"line_id\":{{line_id}},\n  \"batch_no\":\"{{sap_batch}}\",\n  \"age\":{{age_days}},\n  \"bird_stock\":1000,\n  \"customer_type\":\"Retail\",\n  \"customer\":\"Test Customer\",\n  \"sales_type\":\"Cash\",\n  \"transport_by\":\"Own\",\n  \"vehicle_no\":\"TN00AA0000\",\n  \"driver_name\":\"Driver\",\n  \"driver_mobile\":\"9000000000\",\n  \"order_by\":\"OB\",\n  \"dispatched_by\":\"DB\",\n  \"load_details\":[{\"cage_no\":1,\"empty_weight\":5,\"birds_male\":5,\"birds_female\":5,\"load_weight\":80}],\n  \"rate\":100,\n  \"net_weight_male\":25,\n  \"net_weight_female\":25,\n  \"avg_weight_male\":5,\n  \"avg_weight_female\":5,\n  \"gross_value\":5000,\n  \"bill_value\":5000,\n  \"remarks\":\"test\"\n}"
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["let j={};try{j=pm.response.json();}catch(e){}","const id=j.id||'';if(id) pm.collectionVariables.set('cull_sales_record_id', String(id));"] } }]
+        },
+        { "name": "H4 SAP Sync Cull Sales", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/api/sap-sync", "body": { "mode": "raw", "raw": "{\n  \"module\":\"cull_sales\",\n  \"record_id\":{{cull_sales_record_id}}\n}" } } }
+      ]
+    },
+    {
+      "name": "09 Bird Weighing Module (Step by Step)",
+      "item": [
+        {
+          "name": "I1 Save Feeding with bird weights (creates flock_bird_weight)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/daily-activity/feeding/save",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flock_no\":\"{{flock_no}}\",\n  \"plant_code\":\"{{plant_code}}\",\n  \"order_no\":\"{{order_no}}\",\n  \"batch_no\":\"{{sap_batch}}\",\n  \"feed_date\":\"{{today_ymd}}\",\n  \"feed_type\":\"feed\",\n  \"male_weight\":4.65,\n  \"female_weight\":3.85,\n  \"items\":[{\"sap_matnr\":\"{{sap_matnr}}\",\"lgort\":\"{{sap_lgort}}\",\"qty_issued_male\":1,\"qty_issued_female\":1,\"cum_feed\":2}]\n}"
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["let j={};try{j=pm.response.json();}catch(e){}","const id=j.bird_weight?.id||'';if(id) pm.collectionVariables.set('bird_weight_record_id', String(id));"] } }]
+        },
+        { "name": "I2 SAP Sync Bird Weighing", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }], "url": "{{base_url}}/api/sap-sync", "body": { "mode": "raw", "raw": "{\n  \"module\":\"bird_weighing\",\n  \"record_id\":{{bird_weight_record_id}}\n}" } } }
+      ]
+    }
+  ]
+}

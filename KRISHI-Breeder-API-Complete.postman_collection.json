@@ -1,0 +1,6335 @@
+{
+  "info": {
+    "name": "KRISHI Breeder API — Complete",
+    "description": "Generated list of routes in this codebase. Set {{baseUrl}} (e.g. http://localhost:3000). For protected routes, login via POST /api/admin/login and paste JWT into collection variable `token`, then enable the Authorization header on requests (or use Postman Authorization tab).\n\nSome folders duplicate mount paths (/api/masters is registered twice — newMasters + masters).\n\nPhoto uploads (mortality save) need multipart/form-data — adjust in Postman.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "00 — Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 — Admin & Auth",
+      "item": [
+        {
+          "name": "Body: email, password — set token from response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/login"
+          }
+        },
+        {
+          "name": "POST /api/admin/register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/register"
+          }
+        },
+        {
+          "name": "GET /api/admin/getAll",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/getAll"
+          }
+        },
+        {
+          "name": "GET /api/admin/getAll/farmer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/getAll/farmer"
+          }
+        },
+        {
+          "name": "PUT /api/admin/update/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/update/1"
+          }
+        },
+        {
+          "name": "DELETE /api/admin/delete/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/delete/1"
+          }
+        },
+        {
+          "name": "GET /api/admin/screens",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/screens"
+          }
+        },
+        {
+          "name": "GET /api/auth/me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/me"
+          }
+        },
+        {
+          "name": "GET /api/auth/notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/notifications"
+          }
+        },
+        {
+          "name": "POST /api/auth/change-password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/change-password"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — SAP (legacy dashboard / sync)",
+      "item": [
+        {
+          "name": "GET /api/sap/dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/dashboard"
+          }
+        },
+        {
+          "name": "GET /api/sap/sync/bird-receipt",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/sync/bird-receipt"
+          }
+        },
+        {
+          "name": "GET /api/sap/sync/feed-medicine",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/sync/feed-medicine"
+          }
+        },
+        {
+          "name": "GET /api/sap/sync/laying",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/sync/laying"
+          }
+        },
+        {
+          "name": "GET /api/sap/sync/mortality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/sync/mortality"
+          }
+        },
+        {
+          "name": "GET /api/sap/sync/culls-kill",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/sync/culls-kill"
+          }
+        },
+        {
+          "name": "GET /api/sap/sync/culls-sale",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/sync/culls-sale"
+          }
+        },
+        {
+          "name": "GET /api/sap/sync/estimated-cost",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/sync/estimated-cost"
+          }
+        },
+        {
+          "name": "GET /api/sap/bird-receipt",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/bird-receipt"
+          }
+        },
+        {
+          "name": "GET /api/sap/feed-medicine",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/feed-medicine"
+          }
+        },
+        {
+          "name": "GET /api/sap/laying",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/laying"
+          }
+        },
+        {
+          "name": "GET /api/sap/mortality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/mortality"
+          }
+        },
+        {
+          "name": "GET /api/sap/culls-kill",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/culls-kill"
+          }
+        },
+        {
+          "name": "GET /api/sap/culls-sale",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/culls-sale"
+          }
+        },
+        {
+          "name": "GET /api/sap/estimated-cost",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap/estimated-cost"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — SAP Live (dropdowns)",
+      "item": [
+        {
+          "name": "GET /api/sap-live/plants",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-live/plants"
+          }
+        },
+        {
+          "name": "GET /api/sap-live/orders?module=feed_med&werks=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-live/orders?module=feed_med&werks=1901"
+          }
+        },
+        {
+          "name": "GET /api/sap-live/flocks?module=feed_med&werks=1901&aufnr=190125000082",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-live/flocks?module=feed_med&werks=1901&aufnr=190125000082"
+          }
+        },
+        {
+          "name": "GET /api/sap-live/chain?module=feed_med&werks=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-live/chain?module=feed_med&werks=1901"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — SAP Sync (local ↔ SAP)",
+      "item": [
+        {
+          "name": "POST /api/sap-sync",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-sync"
+          }
+        },
+        {
+          "name": "GET /api/sap-sync/status?module=feeding&record_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-sync/status?module=feeding&record_id=1"
+          }
+        },
+        {
+          "name": "GET /api/sap-sync/unsynced?plant_code=1901&limit=30",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-sync/unsynced?plant_code=1901&limit=30"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/push-unsynced",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-sync/push-unsynced"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/pull",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-sync/pull"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/push",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-sync/push"
+          }
+        },
+        {
+          "name": "POST /api/sap-sync/push-raw",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/sap-sync/push-raw"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — Daily activity & feeding",
+      "item": [
+        {
+          "name": "GET /api/daily-activity/sap/materials?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/sap/materials?plant_code=1901"
+          }
+        },
+        {
+          "name": "POST /api/daily-activity/sap/sync-to-master",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/sap/sync-to-master"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/plants",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/plants"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/flocks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/flocks"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/flock-detail/LY000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/flock-detail/LY000001"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/feeding/items?plant_code=1901&type=feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/items?plant_code=1901&type=feed"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/feeding/stock?plant_code=1901&type=medicine",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/stock?plant_code=1901&type=medicine"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/feeding/LY000001?date=2026-05-05",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/LY000001?date=2026-05-05"
+          }
+        },
+        {
+          "name": "POST /api/daily-activity/feeding/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/feeding/save"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/master/feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/feed"
+          }
+        },
+        {
+          "name": "POST /api/daily-activity/master/feed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/feed"
+          }
+        },
+        {
+          "name": "PUT /api/daily-activity/master/feed/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/feed/1"
+          }
+        },
+        {
+          "name": "DELETE /api/daily-activity/master/feed/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/feed/1"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/master/water",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/water"
+          }
+        },
+        {
+          "name": "POST /api/daily-activity/master/water",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/water"
+          }
+        },
+        {
+          "name": "PUT /api/daily-activity/master/water/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/water/1"
+          }
+        },
+        {
+          "name": "DELETE /api/daily-activity/master/water/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/water/1"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/master/medicine",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/medicine"
+          }
+        },
+        {
+          "name": "POST /api/daily-activity/master/medicine",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/medicine"
+          }
+        },
+        {
+          "name": "PUT /api/daily-activity/master/medicine/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/medicine/1"
+          }
+        },
+        {
+          "name": "DELETE /api/daily-activity/master/medicine/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/medicine/1"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/master/others",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/others"
+          }
+        },
+        {
+          "name": "POST /api/daily-activity/master/others",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/others"
+          }
+        },
+        {
+          "name": "PUT /api/daily-activity/master/others/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/others/1"
+          }
+        },
+        {
+          "name": "DELETE /api/daily-activity/master/others/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/others/1"
+          }
+        },
+        {
+          "name": "GET /api/daily-activity/master/stock",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/stock"
+          }
+        },
+        {
+          "name": "POST /api/daily-activity/master/stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/stock"
+          }
+        },
+        {
+          "name": "PUT /api/daily-activity/master/stock/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/daily-activity/master/stock/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — Egg collection v2",
+      "item": [
+        {
+          "name": "GET /api/egg-collection/v2/dropdowns?plant_code=1901&flock_no=LY000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/dropdowns?plant_code=1901&flock_no=LY000001"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/v2/sheds?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/sheds?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/v2/parts?shed_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/parts?shed_id=1"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/v2/lines?part_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/lines?part_id=1"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/v2/egg-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/egg-types"
+          }
+        },
+        {
+          "name": "POST /api/egg-collection/v2/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/save"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/v2/entry?flock_no=LY000001&date=2026-05-05",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/entry?flock_no=LY000001&date=2026-05-05"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/v2/list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/list"
+          }
+        },
+        {
+          "name": "DELETE /api/egg-collection/v2/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/v2/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 — Egg collection (legacy)",
+      "item": [
+        {
+          "name": "GET /api/egg-collection/sheds?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/sheds?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/sheds/1/lines",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/sheds/1/lines"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/egg-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/egg-types"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/summary"
+          }
+        },
+        {
+          "name": "POST /api/egg-collection/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/save"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/list"
+          }
+        },
+        {
+          "name": "GET /api/egg-collection/2026-05-05/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/egg-collection/2026-05-05/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 — Feeding (legacy stock)",
+      "item": [
+        {
+          "name": "POST /api/feeding/sap/push-stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/feeding/sap/push-stock"
+          }
+        },
+        {
+          "name": "POST /api/feeding/consume",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/feeding/consume"
+          }
+        },
+        {
+          "name": "POST /api/feeding/other/item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/feeding/other/item"
+          }
+        },
+        {
+          "name": "DELETE /api/feeding/other/item/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/feeding/other/item/1"
+          }
+        },
+        {
+          "name": "GET /api/feeding/consumption/history",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/feeding/consumption/history"
+          }
+        },
+        {
+          "name": "GET /api/feeding/feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/feeding/feed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 — Bird weighing",
+      "item": [
+        {
+          "name": "POST /api/bird-weighing/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/bird-weighing/save"
+          }
+        },
+        {
+          "name": "GET /api/bird-weighing/entry/2026-05-05",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/bird-weighing/entry/2026-05-05"
+          }
+        },
+        {
+          "name": "GET /api/bird-weighing/list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/bird-weighing/list"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 — Vaccination",
+      "item": [
+        {
+          "name": "GET /api/vaccination/schedule",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination/schedule"
+          }
+        },
+        {
+          "name": "POST /api/vaccination/schedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination/schedule"
+          }
+        },
+        {
+          "name": "PUT /api/vaccination/schedule/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination/schedule/1"
+          }
+        },
+        {
+          "name": "DELETE /api/vaccination/schedule/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination/schedule/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 — Vaccination schedule (mobile)",
+      "item": [
+        {
+          "name": "GET /api/vaccination-schedule/notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-schedule/notifications"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-schedule/record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-schedule/record"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-schedule/today",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-schedule/today"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-schedule/flock/LY000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-schedule/flock/LY000001"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-schedule/generate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-schedule/generate"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-schedule/generate-all",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-schedule/generate-all"
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 — Vaccination master",
+      "item": [
+        {
+          "name": "GET /api/vaccination-master/programs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-master/programs/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs/1"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-master/programs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs"
+          }
+        },
+        {
+          "name": "PUT /api/vaccination-master/programs/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs/1"
+          }
+        },
+        {
+          "name": "DELETE /api/vaccination-master/programs/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs/1"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-master/programs/1/details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs/1/details"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-master/programs/1/details",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs/1/details"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-master/programs/1/details/bulk",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs/1/details/bulk"
+          }
+        },
+        {
+          "name": "PUT /api/vaccination-master/details/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/details/1"
+          }
+        },
+        {
+          "name": "DELETE /api/vaccination-master/details/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/details/1"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-master/programs/1/upload-excel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/programs/1/upload-excel"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-master/template",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-master/template"
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 — Vaccination admin",
+      "item": [
+        {
+          "name": "GET /api/vaccination-admin/programs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/programs"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-admin/programs/current",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/programs/current"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-admin/programs/1/details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/programs/1/details"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-admin/programs/1/details",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/programs/1/details"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-admin/programs/upload-new-version",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/programs/upload-new-version"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-admin/template",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/template"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-admin/flock-dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/flock-dropdown"
+          }
+        },
+        {
+          "name": "GET /api/vaccination-admin/flock-grid/LY000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/flock-grid/LY000001"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-admin/record-missed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/record-missed"
+          }
+        },
+        {
+          "name": "POST /api/vaccination-admin/record-missed/bulk",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vaccination-admin/record-missed/bulk"
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 — Notifications",
+      "item": [
+        {
+          "name": "GET /api/notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/notifications"
+          }
+        },
+        {
+          "name": "PUT /api/notifications/mark-all-read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/notifications/mark-all-read"
+          }
+        },
+        {
+          "name": "POST /api/notifications/trigger-check",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/notifications/trigger-check"
+          }
+        },
+        {
+          "name": "GET /api/notifications/farm-config",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/notifications/farm-config"
+          }
+        },
+        {
+          "name": "PUT /api/notifications/flock-start-date",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/notifications/flock-start-date"
+          }
+        },
+        {
+          "name": "PUT /api/notifications/1/read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/notifications/1/read"
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 — Biosecurity notifications",
+      "item": [
+        {
+          "name": "GET /api/biosec-notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/biosec-notifications"
+          }
+        },
+        {
+          "name": "GET /api/biosec-notifications/entry-screen",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/biosec-notifications/entry-screen"
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 — Farms",
+      "item": [
+        {
+          "name": "GET /api/farms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farms"
+          }
+        },
+        {
+          "name": "POST /api/farms",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farms"
+          }
+        },
+        {
+          "name": "GET /api/farms/1/flocks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farms/1/flocks"
+          }
+        },
+        {
+          "name": "POST /api/farms/1/flocks",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farms/1/flocks"
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 — Flock & farmer master",
+      "item": [
+        {
+          "name": "GET /api/flock-master/dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/flock-master/dropdown"
+          }
+        },
+        {
+          "name": "GET /api/flock-master/LY000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/flock-master/LY000001"
+          }
+        },
+        {
+          "name": "GET /api/flock-master",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/flock-master"
+          }
+        },
+        {
+          "name": "GET /api/farmer-master/dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farmer-master/dropdown"
+          }
+        },
+        {
+          "name": "GET /api/farmer-master/lines",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farmer-master/lines"
+          }
+        },
+        {
+          "name": "GET /api/farmer-master/F001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farmer-master/F001"
+          }
+        },
+        {
+          "name": "GET /api/farmer-master",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farmer-master"
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 — Breeder entries",
+      "item": [
+        {
+          "name": "GET /api/breeder/flocks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder/flocks"
+          }
+        },
+        {
+          "name": "GET /api/breeder/flock/1/opening-stock",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder/flock/1/opening-stock"
+          }
+        },
+        {
+          "name": "POST /api/breeder/entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder/entry"
+          }
+        },
+        {
+          "name": "GET /api/breeder/entry/1/2026-05-05",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder/entry/1/2026-05-05"
+          }
+        },
+        {
+          "name": "GET /api/breeder/entries/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder/entries/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "19 — Mortality / Cull (mortality-cull)",
+      "item": [
+        {
+          "name": "GET /api/mortality-cull/flocks?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/flocks?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/sheds?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/sheds?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/parts?shed_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/parts?shed_id=1"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/lines?part_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/lines?part_id=1"
+          }
+        },
+        {
+          "name": "POST /api/mortality-cull/mortality/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/mortality/save"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/mortality/LY000001?date=2026-05-05",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/mortality/LY000001?date=2026-05-05"
+          }
+        },
+        {
+          "name": "POST /api/mortality-cull/cull-kill/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/cull-kill/save"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/cull-kill/LY000001?date=2026-05-05",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/cull-kill/LY000001?date=2026-05-05"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/master/mortality-reasons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/mortality-reasons"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/master/cull-kill-reasons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/cull-kill-reasons"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/master/mortality-photo-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/mortality-photo-types"
+          }
+        },
+        {
+          "name": "GET /api/mortality-cull/master/cull-kill-photo-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/cull-kill-photo-types"
+          }
+        },
+        {
+          "name": "POST /api/mortality-cull/master/mortality-reasons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/mortality-reasons"
+          }
+        },
+        {
+          "name": "PUT /api/mortality-cull/master/mortality-reasons/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/mortality-reasons/1"
+          }
+        },
+        {
+          "name": "DELETE /api/mortality-cull/master/mortality-reasons/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/mortality-reasons/1"
+          }
+        },
+        {
+          "name": "POST /api/mortality-cull/master/cull-kill-reasons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/cull-kill-reasons"
+          }
+        },
+        {
+          "name": "PUT /api/mortality-cull/master/cull-kill-reasons/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/cull-kill-reasons/1"
+          }
+        },
+        {
+          "name": "DELETE /api/mortality-cull/master/cull-kill-reasons/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/cull-kill-reasons/1"
+          }
+        },
+        {
+          "name": "POST /api/mortality-cull/master/mortality-photo-types",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/mortality-photo-types"
+          }
+        },
+        {
+          "name": "PUT /api/mortality-cull/master/mortality-photo-types/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/mortality-photo-types/1"
+          }
+        },
+        {
+          "name": "POST /api/mortality-cull/master/cull-kill-photo-types",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/cull-kill-photo-types"
+          }
+        },
+        {
+          "name": "PUT /api/mortality-cull/master/cull-kill-photo-types/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mortality-cull/master/cull-kill-photo-types/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "20 — Farm module (mortalityCullKill)",
+      "item": [
+        {
+          "name": "GET /api/farm/sheds",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/sheds"
+          }
+        },
+        {
+          "name": "GET /api/farm/parts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/parts"
+          }
+        },
+        {
+          "name": "GET /api/farm/lines",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/lines"
+          }
+        },
+        {
+          "name": "GET /api/farm/line-info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/line-info"
+          }
+        },
+        {
+          "name": "GET /api/farm/mortality/reasons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/mortality/reasons"
+          }
+        },
+        {
+          "name": "GET /api/farm/mortality/photo-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/mortality/photo-types"
+          }
+        },
+        {
+          "name": "POST /api/farm/mortality/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/mortality/save"
+          }
+        },
+        {
+          "name": "GET /api/farm/mortality/LY000001?date=2026-05-05",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/mortality/LY000001?date=2026-05-05"
+          }
+        },
+        {
+          "name": "GET /api/farm/cull-kill/reasons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/cull-kill/reasons"
+          }
+        },
+        {
+          "name": "GET /api/farm/cull-kill/photo-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/cull-kill/photo-types"
+          }
+        },
+        {
+          "name": "POST /api/farm/cull-kill/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/cull-kill/save"
+          }
+        },
+        {
+          "name": "GET /api/farm/cull-kill/LY000001?date=2026-05-05",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/cull-kill/LY000001?date=2026-05-05"
+          }
+        },
+        {
+          "name": "GET /api/farm/admin/sheds",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/sheds"
+          }
+        },
+        {
+          "name": "GET /api/farm/admin/parts?shed_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/parts?shed_id=1"
+          }
+        },
+        {
+          "name": "GET /api/farm/admin/lines?part_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/lines?part_id=1"
+          }
+        },
+        {
+          "name": "GET /api/farm/admin/mortality-reasons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/mortality-reasons"
+          }
+        },
+        {
+          "name": "GET /api/farm/admin/cull-reasons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/cull-reasons"
+          }
+        },
+        {
+          "name": "GET /api/farm/admin/mortality-photo-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/mortality-photo-types"
+          }
+        },
+        {
+          "name": "GET /api/farm/admin/cull-photo-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/cull-photo-types"
+          }
+        },
+        {
+          "name": "POST /api/farm/admin/sheds",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/sheds"
+          }
+        },
+        {
+          "name": "PUT /api/farm/admin/sheds/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/sheds/1"
+          }
+        },
+        {
+          "name": "DELETE /api/farm/admin/sheds/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/sheds/1"
+          }
+        },
+        {
+          "name": "POST /api/farm/admin/parts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/parts"
+          }
+        },
+        {
+          "name": "PUT /api/farm/admin/parts/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/parts/1"
+          }
+        },
+        {
+          "name": "DELETE /api/farm/admin/parts/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/parts/1"
+          }
+        },
+        {
+          "name": "POST /api/farm/admin/lines",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/lines"
+          }
+        },
+        {
+          "name": "PUT /api/farm/admin/lines/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/lines/1"
+          }
+        },
+        {
+          "name": "DELETE /api/farm/admin/lines/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/lines/1"
+          }
+        },
+        {
+          "name": "POST /api/farm/admin/mortality-reasons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/mortality-reasons"
+          }
+        },
+        {
+          "name": "POST /api/farm/admin/cull-reasons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/cull-reasons"
+          }
+        },
+        {
+          "name": "POST /api/farm/admin/mortality-photo-types",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/mortality-photo-types"
+          }
+        },
+        {
+          "name": "POST /api/farm/admin/cull-photo-types",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/farm/admin/cull-photo-types"
+          }
+        }
+      ]
+    },
+    {
+      "name": "21 — Cull sales",
+      "item": [
+        {
+          "name": "GET /api/cull-sales/flocks?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/flocks?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/sheds?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/sheds?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/parts?shed_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/parts?shed_id=1"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/lines?part_id=1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/lines?part_id=1"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/dropdowns?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/dropdowns?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/customer-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/customer-types"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/customers?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/customers?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/sales-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/sales-types"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/transport-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/transport-types"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/order-by?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/order-by?plant_code=1901"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/dispatched-by?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/dispatched-by?plant_code=1901"
+          }
+        },
+        {
+          "name": "POST /api/cull-sales/masters/sync/customer_types",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/masters/sync/customer_types"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/masters/sync/customer_types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/masters/sync/customer_types"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/masters/getAll/customer_types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/masters/getAll/customer_types"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/calculate-load",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/calculate-load"
+          }
+        },
+        {
+          "name": "POST /api/cull-sales/save",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/save"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/getAll",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/getAll"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/getOne/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/getOne/1"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/flock/LY000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/flock/LY000001"
+          }
+        },
+        {
+          "name": "GET /api/cull-sales/dc/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/dc/1"
+          }
+        },
+        {
+          "name": "DELETE /api/cull-sales/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/cull-sales/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "22 — Masters (/api/masters — newMasters + masters)",
+      "item": [
+        {
+          "name": "GET /api/masters/shed?plant_code=1901",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed?plant_code=1901"
+          }
+        },
+        {
+          "name": "POST /api/masters/shed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed"
+          }
+        },
+        {
+          "name": "POST /api/masters/shed/1/part",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed/1/part"
+          }
+        },
+        {
+          "name": "PUT /api/masters/shed/part/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed/part/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/shed/part/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed/part/1"
+          }
+        },
+        {
+          "name": "POST /api/masters/shed/part/1/line",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed/part/1/line"
+          }
+        },
+        {
+          "name": "PUT /api/masters/shed/line/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed/line/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/shed/line/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed/line/1"
+          }
+        },
+        {
+          "name": "PUT /api/masters/shed/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/shed/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/shed/1"
+          }
+        },
+        {
+          "name": "GET /api/masters/standard-weight",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight"
+          }
+        },
+        {
+          "name": "GET /api/masters/standard-weight/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight/1"
+          }
+        },
+        {
+          "name": "POST /api/masters/standard-weight",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight"
+          }
+        },
+        {
+          "name": "PUT /api/masters/standard-weight/week/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight/week/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/standard-weight/week/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight/week/1"
+          }
+        },
+        {
+          "name": "PUT /api/masters/standard-weight/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/standard-weight/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight/1"
+          }
+        },
+        {
+          "name": "POST /api/masters/standard-weight/1/weeks",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight/1/weeks"
+          }
+        },
+        {
+          "name": "POST /api/masters/standard-weight/1/week",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/standard-weight/1/week"
+          }
+        },
+        {
+          "name": "GET /api/masters/mortality-cull-reasons?module=Mortality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/mortality-cull-reasons?module=Mortality"
+          }
+        },
+        {
+          "name": "POST /api/masters/mortality-cull-reasons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/mortality-cull-reasons"
+          }
+        },
+        {
+          "name": "PUT /api/masters/mortality-cull-reasons/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/mortality-cull-reasons/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/mortality-cull-reasons/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/mortality-cull-reasons/1"
+          }
+        },
+        {
+          "name": "GET /api/masters/bird-grading",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/bird-grading"
+          }
+        },
+        {
+          "name": "POST /api/masters/bird-grading",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/bird-grading"
+          }
+        },
+        {
+          "name": "PUT /api/masters/bird-grading/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/bird-grading/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/bird-grading/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/bird-grading/1"
+          }
+        },
+        {
+          "name": "GET /api/masters/egg-grading",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/egg-grading"
+          }
+        },
+        {
+          "name": "POST /api/masters/egg-grading",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/egg-grading"
+          }
+        },
+        {
+          "name": "PUT /api/masters/egg-grading/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/egg-grading/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/egg-grading/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/egg-grading/1"
+          }
+        },
+        {
+          "name": "GET /api/masters/egg-types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/egg-types"
+          }
+        },
+        {
+          "name": "POST /api/masters/egg-types",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/egg-types"
+          }
+        },
+        {
+          "name": "PUT /api/masters/egg-types/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/egg-types/1"
+          }
+        },
+        {
+          "name": "DELETE /api/masters/egg-types/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masters/egg-types/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "24 — Breeder supply",
+      "item": [
+        {
+          "name": "GET /api/breeder-supply/getAll",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder-supply/getAll"
+          }
+        },
+        {
+          "name": "GET /api/breeder-supply/getOne/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder-supply/getOne/1"
+          }
+        },
+        {
+          "name": "POST /api/breeder-supply/create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder-supply/create"
+          }
+        },
+        {
+          "name": "PUT /api/breeder-supply/update/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder-supply/update/1"
+          }
+        },
+        {
+          "name": "DELETE /api/breeder-supply/remove/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/breeder-supply/remove/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "25 — Supervisor",
+      "item": [
+        {
+          "name": "GET /api/supervisor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/supervisor"
+          }
+        },
+        {
+          "name": "POST /api/supervisor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/supervisor"
+          }
+        },
+        {
+          "name": "PUT /api/supervisor/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/supervisor/1"
+          }
+        },
+        {
+          "name": "POST /api/supervisor/shift",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/supervisor/shift"
+          }
+        },
+        {
+          "name": "GET /api/supervisor/shifts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/supervisor/shifts"
+          }
+        },
+        {
+          "name": "GET /api/supervisor/my-plant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/supervisor/my-plant"
+          }
+        }
+      ]
+    },
+    {
+      "name": "26 — Schedule",
+      "item": [
+        {
+          "name": "POST /api/schedule/generate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/schedule/generate"
+          }
+        },
+        {
+          "name": "GET /api/schedule/today",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/schedule/today"
+          }
+        },
+        {
+          "name": "GET /api/schedule/overdue",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/schedule/overdue"
+          }
+        },
+        {
+          "name": "GET /api/schedule/completion",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/schedule/completion"
+          }
+        },
+        {
+          "name": "GET /api/schedule/late-reasons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/schedule/late-reasons"
+          }
+        },
+        {
+          "name": "POST /api/schedule/complete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/schedule/complete"
+          }
+        },
+        {
+          "name": "POST /api/schedule/trigger-check",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/schedule/trigger-check"
+          }
+        }
+      ]
+    },
+    {
+      "name": "27 — Calendar",
+      "item": [
+        {
+          "name": "GET /api/calendar/today",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/calendar/today"
+          }
+        },
+        {
+          "name": "GET /api/calendar/flock/LY000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/calendar/flock/LY000001"
+          }
+        },
+        {
+          "name": "GET /api/calendar/flock/LY000001/special",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/calendar/flock/LY000001/special"
+          }
+        }
+      ]
+    },
+    {
+      "name": "28 — Mobile activities",
+      "item": [
+        {
+          "name": "GET /api/mobile/activities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/activities"
+          }
+        },
+        {
+          "name": "GET /api/mobile/activities/frequencies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/activities/frequencies"
+          }
+        },
+        {
+          "name": "GET /api/mobile/activities/dropdowns/water-quality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/activities/dropdowns/water-quality"
+          }
+        },
+        {
+          "name": "GET /api/mobile/activities/dropdowns",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/activities/dropdowns"
+          }
+        }
+      ]
+    },
+    {
+      "name": "29 — Mobile tasks (biosecurity)",
+      "item": [
+        {
+          "name": "POST /api/mobile/tasks/daily",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/tasks/daily"
+          }
+        },
+        {
+          "name": "POST /api/mobile/tasks/daily/with-images",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/tasks/daily/with-images"
+          }
+        },
+        {
+          "name": "GET /api/mobile/tasks/daily",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/tasks/daily"
+          }
+        },
+        {
+          "name": "GET /api/mobile/tasks/daily/history",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/tasks/daily/history"
+          }
+        },
+        {
+          "name": "GET /api/mobile/tasks/daily/date-info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/mobile/tasks/daily/date-info"
+          }
+        }
+      ]
+    },
+    {
+      "name": "30 — Admin categories & activities",
+      "item": [
+        {
+          "name": "GET /api/admin/categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categories"
+          }
+        },
+        {
+          "name": "POST /api/admin/categories",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categories"
+          }
+        },
+        {
+          "name": "PUT /api/admin/categories/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categories/1"
+          }
+        },
+        {
+          "name": "DELETE /api/admin/categories/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/categories/1"
+          }
+        },
+        {
+          "name": "GET /api/admin/activities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/activities"
+          }
+        },
+        {
+          "name": "POST /api/admin/activities",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/activities"
+          }
+        },
+        {
+          "name": "PUT /api/admin/activities/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/activities/1"
+          }
+        },
+        {
+          "name": "PATCH /api/admin/activities/1/toggle",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/activities/1/toggle"
+          }
+        },
+        {
+          "name": "DELETE /api/admin/activities/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/activities/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "31 — Admin grid & edit",
+      "item": [
+        {
+          "name": "GET /api/admin/grid/dropdowns",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/dropdowns"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/sheds/1/parts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/sheds/1/parts"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/parts/1/lines",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/parts/1/lines"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/daily-feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/daily-feed"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/daily-feed/detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/daily-feed/detail"
+          }
+        },
+        {
+          "name": "DELETE /api/admin/grid/daily-feed/date",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/daily-feed/date"
+          }
+        },
+        {
+          "name": "DELETE /api/admin/grid/daily-feed/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/daily-feed/1"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/edit/feeding/LY000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/edit/feeding/LY000001"
+          }
+        },
+        {
+          "name": "PUT /api/admin/grid/edit/feeding/LY000001",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/edit/feeding/LY000001"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/mortality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/mortality"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/mortality/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/mortality/1"
+          }
+        },
+        {
+          "name": "DELETE /api/admin/grid/mortality/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/mortality/1"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/edit/mortality/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/edit/mortality/1"
+          }
+        },
+        {
+          "name": "PUT /api/admin/grid/edit/mortality/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/edit/mortality/1"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/cull-kill",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/cull-kill"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/cull-kill/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/cull-kill/1"
+          }
+        },
+        {
+          "name": "DELETE /api/admin/grid/cull-kill/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/cull-kill/1"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/edit/cull-kill/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/edit/cull-kill/1"
+          }
+        },
+        {
+          "name": "PUT /api/admin/grid/edit/cull-kill/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/edit/cull-kill/1"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/egg-collection",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/egg-collection"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/egg-collection/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/egg-collection/1"
+          }
+        },
+        {
+          "name": "DELETE /api/admin/grid/egg-collection/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/egg-collection/1"
+          }
+        },
+        {
+          "name": "GET /api/admin/grid/edit/egg-collection/1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/edit/egg-collection/1"
+          }
+        },
+        {
+          "name": "PUT /api/admin/grid/edit/egg-collection/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/grid/edit/egg-collection/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "32 — Roles",
+      "item": [
+        {
+          "name": "GET /api/roles/getAll/farmer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/roles/getAll/farmer"
+          }
+        },
+        {
+          "name": "GET /api/roles/getAll",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/roles/getAll"
+          }
+        },
+        {
+          "name": "POST /api/roles/add",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/roles/add"
+          }
+        },
+        {
+          "name": "PUT /api/roles/update/1",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/roles/update/1"
+          }
+        },
+        {
+          "name": "DELETE /api/roles/delete/1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true,
+                "description": "Enable for protected routes"
+              }
+            ],
+            "url": "{{baseUrl}}/api/roles/delete/1"
+          }
+        }
+      ]
+    }
+  ]
+}

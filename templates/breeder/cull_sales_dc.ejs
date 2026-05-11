@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cull Sales - Delivery Challan</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fff; }
+    .container { width: 900px; margin: auto; border: 2px solid #000; padding: 10px; }
+    .header { display: flex; align-items: center; border-bottom: 2px solid #000; padding: 15px; }
+    .company-logo { width: 160px; height: auto; }
+    .company-details { margin-left: 40px; font-size: 14px; line-height: 1.8; }
+    .title { text-align: center; font-weight: bold; padding: 6px; margin-top: 5px; background-color: #f2e500; }
+    table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 14px; }
+    td, th { padding: 6px; }
+    .section { border: 2px solid #000; }
+    .section td, .section th { border: none; }
+    .spaced td { padding: 12px; line-height: 2; }
+    .border-right  { border-right:  2px solid #000; }
+    .border-top    { border-top:    2px solid #000; }
+    .border-bottom { border-bottom: 2px solid #000; }
+    .left   { text-align: left; }
+    .center { text-align: center; }
+    .right  { text-align: right; }
+    .amount { text-align: right; font-weight: bold; padding-right: 10px; line-height: 2; }
+    .footer { text-align: center; border-top: 2px solid #000; margin-top: 10px; padding-top: 5px; font-size: 12px; }
+    .badge { background: #c0392b; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <img class="company-logo" src="https://i.postimg.cc/L5VKhNt5/Logo-2.png" alt="Krishi Logo" />
+    <div class="company-details">
+      <b>KRISHI NUTRITION COMPANY PRIVATE LIMITED</b><br>
+      Bill From: D.NO.41TPA, MUTHU ACHARI STREET, NEAR GEETHANJALI PRIMARY SCHOOL,<br>
+      KAVERIPATTINAM, KRISHNAGIRI (DT), TAMIL NADU - 635112<br>
+      GST/IN No.: 33AAFCK1198R1ZO<br>
+      <p>DOC. No. : <%= dc_no_auto %></p>
+    </div>
+  </div>
+
+  <div class="title">
+    Cull Sales — Delivery Challan (only for stock movement within the state)
+  </div>
+
+  <!-- DC Info -->
+  <table class="section">
+    <tr class="border-bottom">
+      <td class="border-right left"><b>DC No:</b> <%= dc_no || dc_no_auto %></td>
+      <td class="border-right center"><b>Date:</b> <%= entry_date %></td>
+      <td class="left"><b>Plant:</b> <%= plant_code %></td>
+    </tr>
+    <tr>
+      <td class="border-right left">
+        <b>Flock No:</b> <%= flock_no %><br>
+        <b>Shed:</b> <%= shed_no || '-' %><br>
+        <b>Batch No:</b> <%= batch_no || flock_no %><br>
+        <b>Age:</b> <%= age || '-' %> days<br>
+        <b>Bird Stock:</b> <%= bird_stock || 0 %>
+      </td>
+      <td colspan="2" class="left">
+        <b>Customer Type:</b> <%= customer_type || '-' %><br>
+        <b>Customer:</b> <%= customer || '-' %><br>
+        <b>Sales Type:</b> <%= sales_type || '-' %><br>
+        <b>Transport By:</b> <%= transport_by || '-' %><br>
+        <b>Order By:</b> <%= order_by || '-' %> &nbsp;&nbsp;
+        <b>Dispatched By:</b> <%= dispatched_by || '-' %>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Load Details Table -->
+  <table class="section">
+    <thead>
+      <tr class="border-bottom">
+        <th>S.No</th>
+        <th>Cage No</th>
+        <th>Empty Wt (kg)</th>
+        <th>No. of Birds (M)</th>
+        <th>No. of Birds (F)</th>
+        <th>Load Wt (kg)</th>
+        <th>Net Wt (kg)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%
+        var tCage=0, tBirdsM=0, tBirdsF=0, tEmpty=0, tLoad=0, tNet=0;
+        for(var i=0; i<load_details.length; i++){
+          var row = load_details[i];
+          tCage++;
+          tBirdsM += Number(row.birds_male||0);
+          tBirdsF += Number(row.birds_female||0);
+          tEmpty  += parseFloat(row.empty_weight||0);
+          tLoad   += parseFloat(row.load_weight||0);
+          tNet    += parseFloat(row.net_weight||0);
+      %>
+      <tr>
+        <td class="center"><%= i+1 %></td>
+        <td class="center"><%= row.cage_no || (i+1) %></td>
+        <td class="center"><%= parseFloat(row.empty_weight||0).toFixed(2) %></td>
+        <td class="center"><%= row.birds_male || 0 %></td>
+        <td class="center"><%= row.birds_female || 0 %></td>
+        <td class="center"><%= parseFloat(row.load_weight||0).toFixed(2) %></td>
+        <td class="center"><%= parseFloat(row.net_weight||0).toFixed(3) %></td>
+      </tr>
+      <% } %>
+      <tr class="border-top">
+        <td><b>Total</b></td>
+        <td class="center"><b><%= tCage %> cages</b></td>
+        <td class="center"><b><%= tEmpty.toFixed(2) %></b></td>
+        <td class="center"><b><%= tBirdsM %></b></td>
+        <td class="center"><b><%= tBirdsF %></b></td>
+        <td class="center"><b><%= tLoad.toFixed(2) %></b></td>
+        <td class="center"><b><%= tNet.toFixed(3) %></b></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Rate Details -->
+  <table class="section spaced">
+    <tr>
+      <td class="left border-right">
+        <b>Rate (per Kg):</b><br>
+        <b>Net Wt Male / Female (kg):</b><br>
+        <b>Avg Wt Male / Female (kg):</b><br>
+        <b>Gross Value (Rs.):</b><br>
+        <b>Bill Value (Rs.):</b><br>
+        <br>
+        (Amount in Rs. <%= bill_value_in_words %>)<br>
+        <small>The approximate value is declared only provisionally and not final value</small>
+      </td>
+      <td class="amount">
+        <%= Number(rate||0).toFixed(2) %><br>
+        <%= Number(net_weight_male||0).toFixed(3) %> / <%= Number(net_weight_female||0).toFixed(3) %><br>
+        <%= Number(avg_weight_male||0).toFixed(3) %> / <%= Number(avg_weight_female||0).toFixed(3) %><br>
+        <%= Number(gross_value||0).toFixed(2) %><br>
+        <b><%= Number(bill_value||0).toFixed(2) %></b>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Vehicle Info -->
+  <table class="section spaced">
+    <tr>
+      <td class="left border-right">
+        <b>Vehicle No:</b> <%= vehicle_no || '-' %><br>
+        <b>Driver Name:</b> <%= driver_name || '-' %><br>
+        <b>Bill No:</b> <%= bill_no %>
+      </td>
+      <td class="left">
+        <b>Driver Mobile:</b> <%= driver_mobile || '-' %><br>
+        <b>Remarks:</b> <%= remarks || '-' %>
+      </td>
+    </tr>
+  </table>
+
+  <div class="footer">
+    This is a computer generated document and hence does not require signature
+  </div>
+
+</div>
+</body>
+</html>
