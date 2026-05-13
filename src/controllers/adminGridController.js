@@ -14,26 +14,28 @@ const { parseDate, todayDate, formatRow } = require('../utils/dateUtils');
 //   shed_line_master   — id, line_no
 // ══════════════════════════════════════════════════════════════════════════
 const pool = require('../config/db');
+const { buildDailyFeedParentId } = require('../utils/dailyFeedParentId');
 
 // ────────────────────────────────────────────────────────────────────────
 // 1. DAILY FEED GRID — ALL TYPES IN ONE GRID
 //    GET /api/admin/grid/daily-feed
 //    Columns: S.No | Date | Plant Name | Flock | Type | Feed | Water | Medicine | Others | Actions
 //
-//    Each row = one flock + one date
+//    Each row = one flock + one date (+ plant)
+//    parent_id = "{plant_code}_{entry_date}_{flock_no}" — same on parent row and every child line
+//    SAP: each line id is still flock_feeding_log.id (record_id); parent sap_fully_synced = all lines synced
 //    Shows summary counts for all 4 types side by side
 //    Filter by feed_type to narrow to one type, or leave blank for all
 //
 //    Query params: search, from_date, to_date, plant_code, flock_no,
-//                  feed_type (optional filter: feed|water|medicine|others),
-//                  limit, offset
+//                  feed_type (optional filter: feed|water|medicine|others)
+//    (No limit/offset — returns all matching date+flock groups.)
 // ────────────────────────────────────────────────────────────────────────
 exports.getDailyFeedGrid = async (req, res) => {
   try {
     const {
       search, from_date, to_date, plant_code, flock_no,
       feed_type,           // optional — if blank, show ALL types
-      limit = 20, offset = 0
     } = req.query;
 
     const conds = [];
@@ -68,31 +70,21 @@ exports.getDailyFeedGrid = async (req, res) => {
     );
     const total = parseInt(countRes.rows[0].count);
 
-    // ── FETCH rows — add LIMIT/OFFSET as new params ──────────────────────
-    const lim  = parseInt(limit);
-    const off  = parseInt(offset);
-    // We fetch all items for the date+flock groups on the current page.
-    // Strategy: get the distinct (feed_date, flock_no) pairs for this page,
-    // then fetch all item rows for those pairs.
+    // We fetch all items for every (date, flock) group matching filters (no pagination).
 
-    // Step 1: get paged group keys
-    const groupVals = [...vals, lim, off];
-    const liIdx = idx;
-    const ofIdx = idx + 1;
-
+    // Step 1: all distinct group keys
     const groupRes = await pool.query(
       `SELECT TO_CHAR(ffl.feed_date,'YYYY-MM-DD') AS feed_date, ffl.flock_no
        FROM flock_feeding_log ffl
        LEFT JOIN farms f ON f.plant_code = ffl.plant_code
        ${where}
        GROUP BY TO_CHAR(ffl.feed_date,'YYYY-MM-DD'), ffl.flock_no
-       ORDER BY TO_CHAR(ffl.feed_date,'YYYY-MM-DD') DESC, ffl.flock_no
-       LIMIT $${liIdx} OFFSET $${ofIdx}`,
-      groupVals
+       ORDER BY TO_CHAR(ffl.feed_date,'YYYY-MM-DD') DESC, ffl.flock_no`,
+      vals
     );
 
     if (!groupRes.rows.length) {
-      return res.json({ success: true, total, limit: lim, offset: off, data: [] });
+      return res.json({ success: true, total, data: [] });
     }
 
     // Step 2: fetch all item rows for those groups
@@ -138,7 +130,9 @@ exports.getDailyFeedGrid = async (req, res) => {
     result.rows.forEach(row => {
       const key = `${row.entry_date}_${row.flock_no}`;
       if (!rowMap.has(key)) {
+        const parent_id = buildDailyFeedParentId(row.plant_code, row.entry_date, row.flock_no);
         rowMap.set(key, {
+          parent_id,
           entry_date:     row.entry_date,
           plant_code:     row.plant_code,
           plant_name:     row.plant_name,
@@ -159,6 +153,8 @@ exports.getDailyFeedGrid = async (req, res) => {
       const grp  = rowMap.get(key);
       const item = {
         id:                row.id,
+        parent_id:        grp.parent_id,
+        feed_type:         row.feed_type,
         item_id:           row.item_id,
         item_name:         row.item_name,
         uom:               row.uom,
@@ -167,6 +163,8 @@ exports.getDailyFeedGrid = async (req, res) => {
         total_qty:         row.total_qty,
         stock_in_bags:     row.stock_in_bags,
         cum_feed:          row.cum_feed,
+        sap_synced:        row.sap_synced,
+        sap_synced_at:     row.sap_synced_at,
       };
       const type = row.feed_type;
       if (grp[type] !== undefined) {
@@ -175,13 +173,40 @@ exports.getDailyFeedGrid = async (req, res) => {
       }
     });
 
-    // SQL already paginated — just add sno
-    const data = Array.from(rowMap.values()).map((row, i) => ({
-      sno: off + i + 1,
-      ...row
-    }));
+    // sno + parent_id + SAP rollups (SAP POST /api/sap-sync still uses each child `id` as record_id)
+    const data = Array.from(rowMap.values()).map((row, i) => {
+      let sap_line_synced = 0;
+      let sap_line_pending = 0;
+      const child_line_ids = [];
+      for (const b of ['feed', 'water', 'medicine', 'others']) {
+        for (const it of row[b] || []) {
+          child_line_ids.push(it.id);
+          if (it.sap_synced) sap_line_synced += 1;
+          else sap_line_pending += 1;
+        }
+      }
+      child_line_ids.sort((a, b) => a - b);
+      const totalLines = sap_line_synced + sap_line_pending;
+      let sap_sync_status = 'none';
+      if (totalLines > 0) {
+        if (sap_line_pending === 0) sap_sync_status = 'synced';
+        else if (sap_line_synced === 0) sap_sync_status = 'pending';
+        else sap_sync_status = 'partial';
+      }
+      const sap_fully_synced = totalLines > 0 && sap_line_pending === 0;
+      return {
+        sno: i + 1,
+        parent_id: row.parent_id,
+        child_line_ids,
+        sap_line_synced_count: sap_line_synced,
+        sap_line_pending_count: sap_line_pending,
+        sap_sync_status,
+        sap_fully_synced,
+        ...row,
+      };
+    });
 
-    return res.json({ success: true, total, limit: parseInt(limit), offset: parseInt(offset), data });
+    return res.json({ success: true, total, data });
   } catch (err) {
     console.error('[getDailyFeedGrid]', err.message);
     return res.status(500).json({ success: false, message: err.message });
@@ -287,7 +312,6 @@ async function mortalityGridQuery(table, req, res) {
   try {
     const {
       search, from_date, to_date, plant_code, flock_no,
-      limit = 20, offset = 0
     } = req.query;
 
     const t = table; // 'mortality_log' or 'cull_kill_log'
@@ -313,9 +337,6 @@ async function mortalityGridQuery(table, req, res) {
       vals
     );
     const total = parseInt(countRes.rows[0].count);
-
-    vals.push(parseInt(limit));  const li = idx++;
-    vals.push(parseInt(offset)); const oi = idx++;
 
     const result = await pool.query(
       `SELECT
@@ -353,16 +374,15 @@ async function mortalityGridQuery(table, req, res) {
        LEFT JOIN flock_daily_activity fda ON fda.flock_no = m.flock_no
                                          AND fda.activity_date = m.entry_date
        ${where}
-       ORDER BY m.entry_date DESC, m.id DESC
-       LIMIT $${li} OFFSET $${oi}`,
+       ORDER BY m.entry_date DESC, m.id DESC`,
       vals
     );
 
     const data = result.rows.map((row, i) => ({
-      sno: parseInt(offset) + i + 1, ...formatRow(row)
+      sno: i + 1, ...formatRow(row)
     }));
 
-    return res.json({ success: true, total, limit: parseInt(limit), offset: parseInt(offset), data });
+    return res.json({ success: true, total, data });
   } catch (err) {
     console.error(`[${table}Grid]`, err.message);
     return res.status(500).json({ success: false, message: err.message });
@@ -493,11 +513,11 @@ exports.deleteCullKill = async (req, res) => {
 // EGG COLLECTION GRID
 // GET /api/admin/grid/egg-collection
 // Columns: S.No | Date | Plant | Flock | Age | Season | T | J | C | W | HE | Total
-// Query params: search, from_date, to_date, plant_code, flock_no, limit, offset
+// Query params: search, from_date, to_date, plant_code, flock_no (no pagination)
 // ════════════════════════════════════════════════════════════════════════
 exports.getEggCollectionGrid = async (req, res) => {
   try {
-    const { search, from_date, to_date, plant_code, flock_no, limit=20, offset=0 } = req.query;
+    const { search, from_date, to_date, plant_code, flock_no } = req.query;
 
     const conds = [], vals = [];
     let idx = 1;
@@ -518,9 +538,6 @@ exports.getEggCollectionGrid = async (req, res) => {
        ${where}`, vals
     );
     const total = parseInt(countRes.rows[0].count);
-
-    vals.push(parseInt(limit));  const li = idx++;
-    vals.push(parseInt(offset)); const oi = idx++;
 
     const result = await pool.query(
       `SELECT
@@ -562,13 +579,12 @@ exports.getEggCollectionGrid = async (req, res) => {
                 ecr.part_id, spm.part_row_no,
                 ecr.line_id, slm.line_no,
                 h.created_at, h.sap_synced, h.sap_synced_at
-       ORDER BY h.collection_date DESC, h.id DESC, sm.shed_no, spm.part_row_no, slm.line_no
-       LIMIT $${li} OFFSET $${oi}`,
+       ORDER BY h.collection_date DESC, h.id DESC, sm.shed_no, spm.part_row_no, slm.line_no`,
       vals
     );
 
-    const data = result.rows.map((row, i) => ({ sno: parseInt(offset)+i+1, ...formatRow(row) }));
-    return res.json({ success:true, total, limit:parseInt(limit), offset:parseInt(offset), data });
+    const data = result.rows.map((row, i) => ({ sno: i + 1, ...formatRow(row) }));
+    return res.json({ success:true, total, data });
   } catch (err) {
     console.error('[getEggCollectionGrid]', err.message);
     return res.status(500).json({ success:false, message:err.message });

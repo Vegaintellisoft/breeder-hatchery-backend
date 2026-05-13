@@ -10,6 +10,7 @@
  */
 
 const pool  = require('../config/db');
+const { parseDailyFeedParentId } = require('../utils/dailyFeedParentId');
 const axios = require('axios');
 const {
   pushToSap,
@@ -117,20 +118,219 @@ async function pushAndMarkSynced(pool, module, recordId, userId) {
   return { ok: true, pushResult };
 }
 
+/** parent_id from JSON body, urlencoded body, or query string (Postman Params tab). */
+function readParentIdFromRequest(req) {
+  const b = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
+  const q = req.query && typeof req.query === 'object' ? req.query : {};
+  const raw = b.parent_id ?? b.parentId ?? q.parent_id ?? q.parentId;
+  if (raw === undefined || raw === null) return '';
+  return String(raw).trim();
+}
+
+/**
+ * Single-record SAP push + local sap_synced flag (same rules as POST /api/sap-sync).
+ * @returns {Promise<{ outcome: string, record_id?: number, data?: any, pushResult?: any, message?: string, reason?: string, gate?: any }>}
+ */
+async function syncOneRecordMarkFlow(pool, module, record_id, userId, user) {
+  const table = MODULE_TABLE[module];
+  if (!table) {
+    return { outcome: 'invalid_module', message: `Invalid module: "${module}"` };
+  }
+
+  const idNum = parseInt(record_id, 10);
+  if (!module || record_id === undefined || record_id === null || Number.isNaN(idNum)) {
+    return { outcome: 'bad_request', message: 'module and numeric record_id required' };
+  }
+
+  const check = await pool.query(
+    `SELECT id, sap_synced, sap_synced_at FROM ${table} WHERE id=$1`,
+    [idNum]
+  );
+  if (check.rowCount === 0) {
+    return { outcome: 'not_found', record_id: idNum };
+  }
+
+  if (check.rows[0].sap_synced) {
+    return { outcome: 'already_synced', record_id: idNum, data: check.rows[0] };
+  }
+
+  const rowRes = await pool.query(`SELECT * FROM ${table} WHERE id=$1`, [idNum]);
+  const row = rowRes.rows[0];
+
+  const gate = assertSyncAllowedForUser(module, row, user);
+  if (!gate.allowed) {
+    return {
+      outcome: 'forbidden',
+      record_id: idNum,
+      message: gate.message,
+      reason: gate.reason,
+      gate,
+    };
+  }
+
+  const sapEndpoint = SAP_ENDPOINT[module];
+  if (!sapEndpoint) {
+    return { outcome: 'no_endpoint', record_id: idNum, message: `No SAP endpoint for module: ${module}` };
+  }
+
+  const pushResult = await pushToSap(pool, module, idNum);
+  if (!pushResult.ok) {
+    return { outcome: 'sap_failed', record_id: idNum, pushResult };
+  }
+
+  const result = await pool.query(
+    `UPDATE ${table}
+     SET sap_synced=TRUE, sap_synced_at=NOW(), sap_synced_by=$1, updated_at=NOW()
+     WHERE id=$2 AND COALESCE(sap_synced,FALSE)=FALSE
+     RETURNING id, sap_synced, sap_synced_at, sap_synced_by`,
+    [userId, idNum]
+  );
+
+  if (result.rowCount === 0) {
+    return { outcome: 'race_after_push', record_id: idNum, pushResult };
+  }
+
+  return { outcome: 'ok', record_id: idNum, pushResult, data: result.rows[0] };
+}
+
+/** POST /api/sap-sync body: { parent_id } — sync all flock_feeding_log rows for that grid parent (JWT). */
+async function syncFeedingByParentId(req, res) {
+  const userId = req.user?.id ?? null;
+  const parent_id = readParentIdFromRequest(req);
+  if (!parent_id) {
+    return res.status(422).json({ success: false, message: 'parent_id required' });
+  }
+
+  const parsed = parseDailyFeedParentId(parent_id);
+  if (!parsed) {
+    return res.status(422).json({
+      success: false,
+      message:
+        'Invalid parent_id. Expected {plant_code}_{YYYY-MM-DD}_{flock_no} (same as GET /api/admin/grid/daily-feed parent_id).',
+    });
+  }
+
+  try {
+    const list = await pool.query(
+      `SELECT id, feed_type, sap_synced
+         FROM flock_feeding_log
+        WHERE plant_code = $1 AND feed_date = $2::date AND flock_no = $3
+        ORDER BY id ASC`,
+      [parsed.plant_code, parsed.feed_date, parsed.flock_no]
+    );
+
+    if (list.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No feeding rows for this parent_id',
+        parent_id,
+        parsed,
+      });
+    }
+
+    const succeeded = [];
+    const skipped = [];
+    const failed = [];
+
+    for (const row of list.rows) {
+      if (row.sap_synced) {
+        skipped.push({ record_id: row.id, feed_type: row.feed_type, reason: 'already_synced' });
+        continue;
+      }
+      const r = await syncOneRecordMarkFlow(pool, 'feeding', row.id, userId, req.user);
+      if (r.outcome === 'ok') {
+        succeeded.push({
+          record_id: row.id,
+          feed_type: row.feed_type,
+          sap_push_detail: r.pushResult,
+          data: r.data,
+        });
+      } else if (r.outcome === 'already_synced') {
+        skipped.push({ record_id: row.id, feed_type: row.feed_type, reason: 'already_synced' });
+      } else if (r.outcome === 'not_found') {
+        failed.push({ record_id: row.id, feed_type: row.feed_type, message: 'Record not found' });
+      } else if (r.outcome === 'forbidden') {
+        failed.push({
+          record_id: row.id,
+          feed_type: row.feed_type,
+          message: r.message,
+          reason: r.reason,
+          business_date: r.gate?.business_date,
+          today_ist: r.gate?.today_ist,
+        });
+      } else if (r.outcome === 'sap_failed') {
+        const pr = r.pushResult || {};
+        failed.push({
+          record_id: row.id,
+          feed_type: row.feed_type,
+          message: pr.message || pr.error || 'SAP rejected the push',
+          validation_failed: !!pr.validation_failed,
+          sap_http_status: pr.status,
+          sap_response: pr.sap_response,
+          sap_payload_preview: pr.sap_payload_preview,
+        });
+      } else if (r.outcome === 'race_after_push') {
+        skipped.push({
+          record_id: row.id,
+          feed_type: row.feed_type,
+          reason: 'marked_synced_by_parallel_request',
+        });
+      } else if (r.outcome === 'no_endpoint') {
+        failed.push({ record_id: row.id, feed_type: row.feed_type, message: r.message });
+      } else {
+        failed.push({
+          record_id: row.id,
+          feed_type: row.feed_type,
+          message: r.message || r.outcome || 'Unknown error',
+        });
+      }
+    }
+
+    const okAll = failed.length === 0;
+    return res.json({
+      success: okAll,
+      batch: true,
+      module: 'feeding',
+      parent_id,
+      parsed,
+      total_candidates: list.rows.length,
+      succeeded_count: succeeded.length,
+      skipped_count: skipped.length,
+      failed_count: failed.length,
+      succeeded,
+      skipped,
+      failed,
+      synced_by_user_id: userId,
+      message: okAll
+        ? `Synced ${succeeded.length} record(s) to SAP (${skipped.length} skipped)`
+        : `Synced ${succeeded.length}, failed ${failed.length}, skipped ${skipped.length}`,
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // POST /api/sap-sync
 // Push to SAP, then mark sap_synced ONLY if SAP accepts (HTTP 2xx).
-// Body: { module, record_id } — requires Bearer login (see routes).
+// Body: { module, record_id } — OR { parent_id } for all lines under daily-feed parent (feeding only).
 // Mobile users: business date must be today (Asia/Kolkata). Admins: any date.
 // ═══════════════════════════════════════════════════════════════════════════
 exports.markSynced = async (req, res) => {
-  const { module, record_id } = req.body;
   const userId = req.user?.id ?? null;
+  const parentStr = readParentIdFromRequest(req);
+  if (parentStr) {
+    return syncFeedingByParentId(req, res);
+  }
+
+  const { module, record_id } = req.body;
 
   if (!module || !record_id) {
     return res.status(422).json({
       success: false,
-      message: 'module and record_id required',
+      message: 'module and record_id required (or send parent_id for feeding batch)',
+      hint:
+        'Feeding batch: JSON body {"parent_id":"1904_2026-05-08_LY000001"} or query ?parent_id=... (same format as GET /api/admin/grid/daily-feed). Single row: {"module":"feeding","record_id":169}. Use Content-Type: application/json. If you still see this without the word "parent_id" in the message, restart the API with the latest code.',
       valid_modules: Object.keys(MODULE_TABLE),
     });
   }
@@ -145,44 +345,46 @@ exports.markSynced = async (req, res) => {
   }
 
   try {
-    const check = await pool.query(
-      `SELECT id, sap_synced, sap_synced_at FROM ${table} WHERE id=$1`,
-      [record_id]
-    );
-    if (check.rowCount === 0) {
+    const r = await syncOneRecordMarkFlow(pool, module, record_id, userId, req.user);
+
+    if (r.outcome === 'not_found') {
       return res.status(404).json({ success: false, message: `Record ${record_id} not found in ${module}` });
     }
 
-    if (check.rows[0].sap_synced) {
+    if (r.outcome === 'already_synced') {
       return res.json({
         success: true,
         already_synced: true,
         message: `Record ${record_id} is already SAP synced`,
-        data: { id: record_id, module, sap_synced: true, sap_synced_at: check.rows[0].sap_synced_at },
+        data: {
+          id: r.record_id,
+          module,
+          sap_synced: true,
+          sap_synced_at: r.data.sap_synced_at,
+        },
       });
     }
 
-    const rowRes = await pool.query(`SELECT * FROM ${table} WHERE id=$1`, [record_id]);
-    const row = rowRes.rows[0];
-
-    const gate = assertSyncAllowedForUser(module, row, req.user);
-    if (!gate.allowed) {
+    if (r.outcome === 'forbidden') {
       return res.status(403).json({
         success: false,
-        message: gate.message,
-        reason: gate.reason,
-        business_date: gate.business_date,
-        today_ist: gate.today_ist,
+        message: r.message,
+        reason: r.reason,
+        business_date: r.gate?.business_date,
+        today_ist: r.gate?.today_ist,
       });
     }
 
-    const sapEndpoint = SAP_ENDPOINT[module];
-    if (!sapEndpoint) {
-      return res.status(400).json({ success: false, message: `No SAP endpoint for module: ${module}` });
+    if (r.outcome === 'no_endpoint') {
+      return res.status(400).json({ success: false, message: r.message });
     }
 
-    const pushResult = await pushToSap(pool, module, record_id);
-    if (!pushResult.ok) {
+    if (r.outcome === 'bad_request' || r.outcome === 'invalid_module') {
+      return res.status(422).json({ success: false, message: r.message });
+    }
+
+    if (r.outcome === 'sap_failed') {
+      const pushResult = r.pushResult;
       const msg = pushResult.message || pushResult.error || 'SAP rejected the push';
       console.error(`[sapSync] SAP push failed for ${module} #${record_id}:`, msg);
       const httpStatus = pushResult.validation_failed ? 422 : 502;
@@ -198,29 +400,33 @@ exports.markSynced = async (req, res) => {
       });
     }
 
-    const result = await pool.query(
-      `UPDATE ${table}
-       SET sap_synced=TRUE, sap_synced_at=NOW(), sap_synced_by=$1, updated_at=NOW()
-       WHERE id=$2 AND COALESCE(sap_synced,FALSE)=FALSE
-       RETURNING id, sap_synced, sap_synced_at, sap_synced_by`,
-      [userId, record_id]
-    );
+    if (r.outcome === 'race_after_push') {
+      return res.status(409).json({
+        success: false,
+        message: 'Record was marked synced by another request after SAP accepted; refresh and retry',
+        sap_push_detail: r.pushResult,
+      });
+    }
 
-    return res.json({
-      success: true,
-      message: `✅ ${module} record ${record_id} synced to SAP and marked locally`,
-      sap_pushed: true,
-      sap_push_detail: pushResult,
-      synced_by_user_id: userId,
-      data: {
-        id: result.rows[0].id,
-        module,
-        table,
-        sap_synced: true,
-        sap_synced_at: result.rows[0].sap_synced_at,
-        sap_synced_by: result.rows[0].sap_synced_by,
-      },
-    });
+    if (r.outcome === 'ok') {
+      return res.json({
+        success: true,
+        message: `✅ ${module} record ${record_id} synced to SAP and marked locally`,
+        sap_pushed: true,
+        sap_push_detail: r.pushResult,
+        synced_by_user_id: userId,
+        data: {
+          id: r.data.id,
+          module,
+          table,
+          sap_synced: true,
+          sap_synced_at: r.data.sap_synced_at,
+          sap_synced_by: r.data.sap_synced_by,
+        },
+      });
+    }
+
+    return res.status(500).json({ success: false, message: r.message || 'Unexpected sync outcome' });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }

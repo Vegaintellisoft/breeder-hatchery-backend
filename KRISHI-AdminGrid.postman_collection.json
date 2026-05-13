@@ -106,7 +106,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=feed&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=feed",
               "host": [
                 "{{base_url}}/api/admin/grid/daily-feed"
               ],
@@ -114,14 +114,6 @@
                 {
                   "key": "feed_type",
                   "value": "feed"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -138,7 +130,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=water&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=water",
               "host": [
                 "{{base_url}}/api/admin/grid/daily-feed"
               ],
@@ -146,14 +138,6 @@
                 {
                   "key": "feed_type",
                   "value": "water"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -170,7 +154,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=medicine&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=medicine",
               "host": [
                 "{{base_url}}/api/admin/grid/daily-feed"
               ],
@@ -178,14 +162,6 @@
                 {
                   "key": "feed_type",
                   "value": "medicine"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -202,7 +178,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=others&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?feed_type=others",
               "host": [
                 "{{base_url}}/api/admin/grid/daily-feed"
               ],
@@ -210,14 +186,6 @@
                 {
                   "key": "feed_type",
                   "value": "others"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -234,7 +202,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/daily-feed?search=LY000001&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?search=LY000001",
               "host": [
                 "{{base_url}}/api/admin/grid/daily-feed"
               ],
@@ -242,14 +210,6 @@
                 {
                   "key": "search",
                   "value": "LY000001"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -266,7 +226,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/daily-feed?from_date=2026-04-01&to_date=2026-04-15&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/daily-feed?from_date=2026-04-01&to_date=2026-04-15",
               "host": [
                 "{{base_url}}/api/admin/grid/daily-feed"
               ],
@@ -278,14 +238,6 @@
                 {
                   "key": "to_date",
                   "value": "2026-04-15"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -582,20 +534,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/mortality?limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/mortality",
               "host": [
                 "{{base_url}}/api/admin/grid/mortality"
               ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
-                }
-              ]
+              "query": []
             }
           }
         },
@@ -610,7 +553,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/mortality?search=LY000001&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/mortality?search=LY000001",
               "host": [
                 "{{base_url}}/api/admin/grid/mortality"
               ],
@@ -618,14 +561,6 @@
                 {
                   "key": "search",
                   "value": "LY000001"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -642,7 +577,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/mortality?from_date=2026-04-01&to_date=2026-04-15&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/mortality?from_date=2026-04-01&to_date=2026-04-15",
               "host": [
                 "{{base_url}}/api/admin/grid/mortality"
               ],
@@ -654,14 +589,6 @@
                 {
                   "key": "to_date",
                   "value": "2026-04-15"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -768,20 +695,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/cull-kill?limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/cull-kill",
               "host": [
                 "{{base_url}}/api/admin/grid/cull-kill"
               ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
-                }
-              ]
+              "query": []
             }
           }
         },
@@ -796,7 +714,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/cull-kill?search=LY000001&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/cull-kill?search=LY000001",
               "host": [
                 "{{base_url}}/api/admin/grid/cull-kill"
               ],
@@ -804,14 +722,6 @@
                 {
                   "key": "search",
                   "value": "LY000001"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }
@@ -828,7 +738,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/admin/grid/cull-kill?from_date=2026-04-01&to_date=2026-04-15&limit=20&offset=0",
+              "raw": "{{base_url}}/api/admin/grid/cull-kill?from_date=2026-04-01&to_date=2026-04-15",
               "host": [
                 "{{base_url}}/api/admin/grid/cull-kill"
               ],
@@ -840,14 +750,6 @@
                 {
                   "key": "to_date",
                   "value": "2026-04-15"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
                 }
               ]
             }

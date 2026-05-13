@@ -12,6 +12,8 @@ const SAP_AUTH = {
   password: process.env.SAP_PASSWORD || 'Vega@1234',
 };
 const SAP_CLIENT = process.env.SAP_CLIENT || '500';
+const SAP_POST_TIMEOUT_MS = Number(process.env.SAP_POST_TIMEOUT_MS || 90000);
+const SAP_POST_TIMEOUT_EGG_MS = Number(process.env.SAP_POST_TIMEOUT_EGG_MS || 180000);
 const SAP_MASTERS_URL = process.env.SAP_MASTERS_URL || String(SAP_BASE).replace(/\/breeder\/?$/i, '');
 
 /** Calendar YYYY-MM-DD from DB value (avoids UTC off-by-one on JS Date). */
@@ -47,6 +49,18 @@ function omitEmptyDeepStrings(obj) {
     else out[k] = v;
   }
   return out;
+}
+
+/** zmortality_ent / cull-kill: QAS ABAP may substring CHARG/dates on empty — re-fill after omit-empty. */
+function finalizeMorKillSapPayload(raw) {
+  const row = omitEmptyDeepStrings(raw);
+  const bldat = String(raw.bldat || row.bldat || '').trim();
+  const matnr = String(raw.matnr || row.matnr || '').trim();
+  if (bldat) row.hatchdt = String(row.hatchdt || raw.hatchdt || bldat).trim();
+  if (matnr) row.maktx = String(row.maktx || raw.maktx || matnr).trim();
+  const batch = String(raw.batch || row.batch || '').trim();
+  row.batch = batch || '0000000000';
+  return row;
 }
 
 function numStr(v) {
@@ -113,14 +127,14 @@ function buildSapPostUrl(endpoint, queryParams = {}) {
 /**
  * POST to SAP with all fields in the URL query (broiler-backend pattern).
  */
-async function postSap(endpoint, queryParams) {
+async function postSap(endpoint, queryParams, timeoutMs = SAP_POST_TIMEOUT_MS) {
   const finalUrl = buildSapPostUrl(endpoint, queryParams);
   const res = await axios.request({
     method: 'post',
     maxBodyLength: Infinity,
     url: finalUrl,
     auth: SAP_AUTH,
-    timeout: 90000,
+    timeout: timeoutMs,
     maxRedirects: 5,
     validateStatus: () => true,
   });
@@ -497,9 +511,10 @@ function buildBreegrnRows(header, flockRow, slotTotals, eggTypes) {
   const aufnr = String(header.order_no || '').trim();
   const matnr = String(header.flock_no || '').trim();
   const maktx = String(flockRow?.flock_name || '').trim();
-  const batch = String(flockRow?.batch || '').trim();
-  const hatchdt = toDmyFromDbDate(flockRow?.hatchery_date);
   const bldat = toDmyFromDbDate(header.collection_date);
+  // QAS ABAP can substring date/batch fields; keep non-empty fallbacks.
+  const hatchdt = toDmyFromDbDate(flockRow?.hatchery_date) || bldat;
+  const batch = String(flockRow?.batch || '').trim() || '0000000000';
   const zzflock = batch || '';
   let zzage = header.age_days != null ? numStr(header.age_days) : '';
   const zzstock = flockRow?.stock_total != null ? numStr(flockRow.stock_total) : '';
@@ -564,13 +579,16 @@ function buildMorKillRow(rec) {
     (parseFloat(rec.evening_female) || 0)
   );
   const totalDead = rec.total_qty ?? (maleDead + femaleDead);
+  const bldat = toDmyFromDbDate(rec.entry_date);
+  // QAS ABAP dumps on empty date substrings; never send blank hatchdt when bldat exists.
+  const hatchdt = toDmyFromDbDate(rec.hatchery_date) || bldat;
   return {
     werks: String(rec.plant_code || '').trim(),
     aufnr: String(rec.order_no || '').trim(),
     matnr: String(rec.flock_no || '').trim(),
-    maktx: String(rec.flock_name || '').trim(),
-    hatchdt: toDmyFromDbDate(rec.hatchery_date),
-    bldat: toDmyFromDbDate(rec.entry_date),
+    maktx: String(rec.flock_name || rec.flock_no || '').trim(),
+    hatchdt,
+    bldat,
     batch: String(rec.batch || '').trim(),
     zzage: rec.age_days != null ? numStr(rec.age_days) : '',
     zzstock: rec.stock_total != null ? numStr(rec.stock_total) : '',
@@ -742,8 +760,12 @@ async function pushToSap(pool, module, recordId) {
       const dmfdet = [buildFeedMedGeneralRow(rowForSap)];
       const line = buildFeedOrMedLine(rowForSap);
       const empty = { matnr: '', maktx: '', uom: '', lgort: '', stock: '', erfmg: '' };
-      const feeddet = String(rowForSap.feed_type || '').toLowerCase() === 'feed' ? [line] : [empty];
-      const meddet = String(rowForSap.feed_type || '').toLowerCase() === 'medicine' ? [line] : [empty];
+      const ft = String(rowForSap.feed_type || '').toLowerCase();
+      // zfeed_med only has feeddet + meddet. Medicine → meddet; feed → feeddet.
+      // Water/others used to put [empty] in BOTH (nothing for SAP to post → "No record updated").
+      // Same line shape as feed; send water/others in feeddet, meddet empty unless medicine.
+      const feeddet = ft === 'feed' || ft === 'water' || ft === 'others' ? [line] : [empty];
+      const meddet = ft === 'medicine' ? [line] : [empty];
 
       const params = {
         dmfdet: JSON.stringify(dmfdet),
@@ -820,7 +842,7 @@ async function pushToSap(pool, module, recordId) {
           sap_payload_preview: breegrn,
         };
       }
-      const res = await postSap('zlaying_prelay', { breegrn: JSON.stringify(breegrn) });
+      const res = await postSap('zlaying_prelay', { breegrn: JSON.stringify(breegrn) }, SAP_POST_TIMEOUT_EGG_MS);
       return { module, record_id: id, sap_payload_preview: breegrn, ...interpretSapResponse(res) };
     }
 
@@ -867,7 +889,7 @@ async function pushToSap(pool, module, recordId) {
           sap_payload_preview: buildMorKillRow(rec),
         };
       }
-      const payload = [omitEmptyDeepStrings(buildMorKillRow(rec))];
+      const payload = [finalizeMorKillSapPayload(buildMorKillRow(rec))];
       const res = await postSap('zmortality_ent', { bremor: JSON.stringify(payload) });
       return { module, record_id: id, sap_payload_preview: payload[0], ...interpretSapResponse(res) };
     }
@@ -915,7 +937,7 @@ async function pushToSap(pool, module, recordId) {
           sap_payload_preview: buildMorKillRow(rec),
         };
       }
-      const payload = [omitEmptyDeepStrings(buildMorKillRow(rec))];
+      const payload = [finalizeMorKillSapPayload(buildMorKillRow(rec))];
       const res = await postSap('zculls_kill', { breckill: JSON.stringify(payload) });
       return { module, record_id: id, sap_payload_preview: payload[0], ...interpretSapResponse(res) };
     }

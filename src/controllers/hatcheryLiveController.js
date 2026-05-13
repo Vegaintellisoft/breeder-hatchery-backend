@@ -1021,8 +1021,27 @@ async function ensureHatcheryReasonTable() {
   );
 }
 
+/** Resolve ?module=… for hatchery reasons. Uses last non-empty value (Postman often sends duplicate/empty keys). */
+function readReasonModuleFilter(query) {
+  const vals = [];
+  if (!query || typeof query !== 'object') return '';
+  for (const [key, val] of Object.entries(query)) {
+    if (String(key).toLowerCase() !== 'module') continue;
+    if (Array.isArray(val)) {
+      for (const x of val) vals.push(x);
+    } else {
+      vals.push(val);
+    }
+  }
+  for (let i = vals.length - 1; i >= 0; i--) {
+    const s = String(vals[i] == null ? '' : vals[i]).trim().toLowerCase();
+    if (s) return s;
+  }
+  return '';
+}
+
 exports.getHatcheryReasons = async (req, res) => {
-  const raw = String(req.query.module || req.query.Module || '').trim().toLowerCase();
+  const raw = readReasonModuleFilter(req.query);
   const module = raw === '' || raw === 'all' ? 'all' : raw;
   try {
     await ensureHatcheryReasonTable();

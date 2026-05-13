@@ -2969,16 +2969,37 @@
             "method": "POST",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{token}}",
                 "disabled": true,
-                "description": "Enable for protected routes"
+                "description": "Enable + login first. Do NOT set Content-Type manually — Postman sets multipart boundary."
               }
             ],
+            "description": "Local save: multipart/form-data. Image field names are photo_type_id_<id> where id comes from GET /api/mortality-cull/master/mortality-photo-types (same id as UI). Up to 12 file keys allowed (see mortalityCull routes). JPEG/PNG/GIF only, max 5MB each.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "flock_no", "value": "LY000001", "type": "text" },
+                { "key": "plant_code", "value": "1904", "type": "text" },
+                { "key": "order_no", "value": "190125000035", "type": "text" },
+                { "key": "shed_id", "value": "1", "type": "text" },
+                { "key": "part_id", "value": "1", "type": "text" },
+                { "key": "line_id", "value": "1", "type": "text" },
+                { "key": "entry_date", "value": "2026-05-11", "type": "text" },
+                { "key": "cum_birds", "value": "9436", "type": "text" },
+                { "key": "total_male", "value": "98", "type": "text" },
+                { "key": "total_female", "value": "942", "type": "text" },
+                { "key": "morning_male", "value": "1", "type": "text" },
+                { "key": "morning_female", "value": "0", "type": "text" },
+                { "key": "afternoon_male", "value": "0", "type": "text" },
+                { "key": "afternoon_female", "value": "0", "type": "text" },
+                { "key": "evening_male", "value": "0", "type": "text" },
+                { "key": "evening_female", "value": "0", "type": "text" },
+                { "key": "reasons", "value": "[{\"reason_id\":4,\"reason_name\":\"Prolapse\",\"male_count\":1,\"female_count\":1}]", "type": "text" },
+                { "key": "photo_type_id_1", "type": "file", "src": [], "description": "Pick image — key must match photo type master id (e.g. 1 = first type / upload collection photo)" },
+                { "key": "photo_type_id_2", "type": "file", "src": [], "disabled": true }
+              ]
+            },
             "url": "{{baseUrl}}/api/mortality-cull/mortality/save"
           }
         },
@@ -3007,16 +3028,37 @@
             "method": "POST",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{token}}",
                 "disabled": true,
-                "description": "Enable for protected routes"
+                "description": "Enable + login first. Multipart — do not set Content-Type header manually."
               }
             ],
+            "description": "Same as mortality save but POST .../cull-kill/save. Photo keys: photo_type_id_<id> from GET /api/mortality-cull/master/cull-kill-photo-types.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "flock_no", "value": "LY000001", "type": "text" },
+                { "key": "plant_code", "value": "1904", "type": "text" },
+                { "key": "order_no", "value": "190125000035", "type": "text" },
+                { "key": "shed_id", "value": "1", "type": "text" },
+                { "key": "part_id", "value": "1", "type": "text" },
+                { "key": "line_id", "value": "1", "type": "text" },
+                { "key": "entry_date", "value": "2026-05-11", "type": "text" },
+                { "key": "cum_birds", "value": "9436", "type": "text" },
+                { "key": "total_male", "value": "98", "type": "text" },
+                { "key": "total_female", "value": "942", "type": "text" },
+                { "key": "morning_male", "value": "1", "type": "text" },
+                { "key": "morning_female", "value": "0", "type": "text" },
+                { "key": "afternoon_male", "value": "0", "type": "text" },
+                { "key": "afternoon_female", "value": "0", "type": "text" },
+                { "key": "evening_male", "value": "0", "type": "text" },
+                { "key": "evening_female", "value": "0", "type": "text" },
+                { "key": "reasons", "value": "[{\"reason_id\":1,\"reason_name\":\"Test\",\"male_count\":1,\"female_count\":1}]", "type": "text" },
+                { "key": "photo_type_id_1", "type": "file", "src": [], "description": "Cull-kill photo type id from master GET" },
+                { "key": "photo_type_id_2", "type": "file", "src": [], "disabled": true }
+              ]
+            },
             "url": "{{baseUrl}}/api/mortality-cull/cull-kill/save"
           }
         },

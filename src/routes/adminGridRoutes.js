@@ -25,7 +25,7 @@ router.get('/parts/:part_id/lines',  edit.getPartLines);
 // ═══════════════════════════════════════════════════════════════════════════
 // GET  /api/admin/grid/daily-feed
 //   ?feed_type=feed|water|medicine|others  (default: feed)
-//   ?search=  &from_date=  &to_date=  &plant_code=  &flock_no=  &limit=20  &offset=0
+//   ?search=  &from_date=  &to_date=  &plant_code=  &flock_no=
 //   Grid cols: S.No | Date | Plant Name | Flock | [items summary] | Actions
 router.get('/daily-feed',           grid.getDailyFeedGrid);
 
@@ -67,7 +67,7 @@ router.put('/edit/feeding/:flock_no',  edit.updateFeeding);
 // MORTALITY TABLE GRID  (Image 2 — Mortality screen)
 // ═══════════════════════════════════════════════════════════════════════════
 // GET  /api/admin/grid/mortality
-//   ?search=  &from_date=  &to_date=  &plant_code=  &flock_no=  &limit=20  &offset=0
+//   ?search=  &from_date=  &to_date=  &plant_code=  &flock_no=
 //   Grid cols: S.No | Date | Plant Name | Flock | Shed | M/A/E counts | Actions
 router.get('/mortality',             grid.getMortalityGrid);
 
@@ -112,7 +112,7 @@ router.put('/edit/mortality/:id',    edit.updateMortality);
 // CULL KILL TABLE GRID  (Image 3 — Cull Kill screen)
 // ═══════════════════════════════════════════════════════════════════════════
 // GET  /api/admin/grid/cull-kill
-//   ?search=  &from_date=  &to_date=  &plant_code=  &flock_no=  &limit=20  &offset=0
+//   ?search=  &from_date=  &to_date=  &plant_code=  &flock_no=
 //   Grid cols: S.No | Date | Plant Name | Flock | Shed | Cull counts | Actions
 router.get('/cull-kill',             grid.getCullKillGrid);
 
@@ -138,7 +138,7 @@ module.exports = router;
 // ════════════════════════════════════════════════════════════════════════
 
 // GET  /api/admin/grid/egg-collection
-//   ?search= &from_date= &to_date= &plant_code= &flock_no= &limit=20 &offset=0
+//   ?search= &from_date= &to_date= &plant_code= &flock_no=
 //   Grid cols: S.No | Date | Plant | Flock | Age | Season | T | J | C | W | HE | Total
 router.get('/egg-collection',          grid.getEggCollectionGrid);
 
