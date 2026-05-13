@@ -751,6 +751,16 @@ const LOCAL_SCREEN_PARAM = {
   'medicine-issue': 'medicine_issue',
 };
 
+/** DB `screen` column → URL segment for `/local/:screen/...` */
+const SCREEN_DB_TO_PATH = {
+  egg_receipt: 'egg-receipt',
+  grade_setting: 'grade-setting',
+  trans_pullout: 'transfer-pullout',
+  medicine_issue: 'medicine-issue',
+};
+
+const ALL_LOCAL_SCREENS_DB = Object.values(LOCAL_SCREEN_PARAM);
+
 async function ensureHatcheryLocalEntryTable() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS hatchery_local_entry (
@@ -943,7 +953,7 @@ exports.listHatcheryLocal = async (req, res) => {
     vals.push(lim);
     const q = await pool.query(
       `SELECT id, screen, werks, lifnr, po_no, flock_no, matnr, entry_date, payload, entered_by,
-              sap_synced, sap_synced_at, created_at, updated_at
+              sap_synced, sap_synced_at, sap_synced_by, created_at, updated_at
          FROM hatchery_local_entry
         WHERE ${conds.join(' AND ')}
         ORDER BY updated_at DESC, id DESC
@@ -993,6 +1003,137 @@ exports.getHatcheryLocalById = async (req, res) => {
     return res.json({ success: true, module: 'hatchery', screen, source: 'local_db', data: q.rows[0] });
   } catch (err) {
     console.error('[getHatcheryLocalById]', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// GET /api/hatchery-live/admin/grid
+// JWT (Hatchery or Breeder category per token). Lists saved local rows for one screen or all four.
+// Query: screen=all|egg-receipt|grade-setting|transfer-pullout|medicine-issue (default all),
+//        werks, from_date, to_date, search (matches id, werks, flock_no, po_no, lifnr)
+exports.listHatcheryAdminGrid = async (req, res) => {
+  const rawScreen = String(req.query.screen || 'all').trim().toLowerCase();
+  let screensDb = [];
+  if (!rawScreen || rawScreen === 'all') {
+    screensDb = [...ALL_LOCAL_SCREENS_DB];
+  } else {
+    const one = resolveLocalScreen(rawScreen);
+    if (!one) {
+      return res.status(422).json({
+        success: false,
+        message: 'invalid screen',
+        valid: ['all', ...Object.keys(LOCAL_SCREEN_PARAM)],
+      });
+    }
+    screensDb = [one];
+  }
+
+  try {
+    await ensureHatcheryLocalEntryTable();
+    const { werks, from_date, to_date, search } = req.query;
+
+    const conds = [`screen = ANY($1::text[])`];
+    const vals = [screensDb];
+    let idx = 2;
+
+    if (werks) {
+      conds.push(`werks = $${idx++}`);
+      vals.push(String(werks).trim());
+    }
+    if (from_date) {
+      conds.push(`entry_date >= $${idx++}::date`);
+      vals.push(String(from_date).trim());
+    }
+    if (to_date) {
+      conds.push(`entry_date <= $${idx++}::date`);
+      vals.push(String(to_date).trim());
+    }
+    if (search && String(search).trim()) {
+      const s = `%${String(search).trim()}%`;
+      conds.push(
+        `(CAST(id AS TEXT) ILIKE $${idx} OR werks ILIKE $${idx} OR flock_no ILIKE $${idx} OR po_no ILIKE $${idx} OR lifnr ILIKE $${idx} OR matnr ILIKE $${idx})`
+      );
+      vals.push(s);
+      idx++;
+    }
+
+    const where = conds.join(' AND ');
+    const countRes = await pool.query(
+      `SELECT COUNT(*)::int AS c FROM hatchery_local_entry WHERE ${where}`,
+      vals
+    );
+    const total = countRes.rows[0].c;
+
+    const q = await pool.query(
+      `SELECT id, screen, werks, lifnr, po_no, flock_no, matnr, entry_date, payload, entered_by,
+              sap_synced, sap_synced_at, sap_synced_by, created_at, updated_at
+         FROM hatchery_local_entry
+        WHERE ${where}
+        ORDER BY screen, updated_at DESC, id DESC`,
+      vals
+    );
+
+    const data = q.rows.map((row, i) => {
+      const synced = !!row.sap_synced;
+      return {
+        sno: i + 1,
+        screen_path: SCREEN_DB_TO_PATH[row.screen] || row.screen,
+        sap_sync_status: synced ? 'synced' : 'pending',
+        sap_fully_synced: synced,
+        ...row,
+      };
+    });
+
+    return res.json({
+      success: true,
+      module: 'hatchery',
+      screen_filter: rawScreen === 'all' || !rawScreen ? 'all' : rawScreen,
+      source: 'local_db',
+      total,
+      data,
+      edit_hint: 'POST /api/hatchery-live/local/{screen_path}/save with body.id and same fields as create.',
+      delete_hint: 'DELETE /api/hatchery-live/local/{screen_path}/:id — blocked when sap_synced is true.',
+    });
+  } catch (err) {
+    console.error('[listHatcheryAdminGrid]', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// DELETE /api/hatchery-live/local/:screen/:id — not allowed after SAP sync
+exports.deleteHatcheryLocal = async (req, res) => {
+  const screen = resolveLocalScreen(req.params.screen);
+  if (!screen) {
+    return res.status(422).json({
+      success: false,
+      message: 'invalid screen path',
+      valid_screens: Object.keys(LOCAL_SCREEN_PARAM),
+    });
+  }
+  const id = parseInt(String(req.params.id || ''), 10);
+  if (!Number.isFinite(id)) {
+    return res.status(422).json({ success: false, message: 'valid id required' });
+  }
+  try {
+    await ensureHatcheryLocalEntryTable();
+    const chk = await pool.query(
+      `SELECT id, sap_synced FROM hatchery_local_entry WHERE id = $1 AND screen = $2`,
+      [id, screen]
+    );
+    if (chk.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'Not found' });
+    }
+    if (chk.rows[0].sap_synced) {
+      return res.status(403).json({
+        success: false,
+        message: 'Cannot delete — record is SAP synced',
+        sap_synced: true,
+      });
+    }
+    await pool.query(`DELETE FROM hatchery_local_entry WHERE id = $1 AND screen = $2`, [id, screen]);
+    return res.json({ success: true, message: 'Deleted', id });
+  } catch (err) {
+    console.error('[deleteHatcheryLocal]', err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };

@@ -25,5 +25,10 @@ router.post('/reasons', authenticate, ctrl.postHatcheryReason);
 router.post('/local/:screen/save', authenticate, ctrl.saveHatcheryLocal);
 router.get('/local/:screen', authenticate, ctrl.listHatcheryLocal);
 router.get('/local/:screen/:id', authenticate, ctrl.getHatcheryLocalById);
+router.delete('/local/:screen/:id', authenticate, ctrl.deleteHatcheryLocal);
+
+// Admin grid — all hatchery local modules in one list (SAP sync columns + edit/delete hints)
+// GET /api/hatchery-live/admin/grid?screen=all|egg-receipt|...&werks=&from_date=&to_date=&search=
+router.get('/admin/grid', authenticate, ctrl.listHatcheryAdminGrid);
 
 module.exports = router;

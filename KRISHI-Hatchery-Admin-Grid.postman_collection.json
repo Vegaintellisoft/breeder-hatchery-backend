@@ -1,0 +1,101 @@
+{
+  "info": {
+    "_postman_id": "c7e2a1b4-hatchery-admin-grid-01",
+    "name": "KRISHI — Hatchery admin grid (all modules + SAP + edit + delete)",
+    "description": "**Import:** File → Import in Postman.\n\n**Auth:** Hatchery JWT from `POST /api/admin/login` with `\"category\": \"Hatchery\"` (e.g. superadmin / Krishi@123). Run **01 Login** first; it saves `token`.\n\n**Grid (all saved local rows):** `GET /api/hatchery-live/admin/grid` — optional `screen=all|egg-receipt|grade-setting|transfer-pullout|medicine-issue`, plus `werks`, `from_date`, `to_date`, `search`. Each row includes `sap_synced`, `sap_sync_status` (synced|pending), `screen_path` for URLs.\n\n**Edit:** `POST /api/hatchery-live/local/{screen_path}/save` with JSON body including `id` (same as mobile save).\n\n**Delete:** `DELETE /api/hatchery-live/local/{screen_path}/{{local_id}}` — **403** if `sap_synced` is true.\n\n**Detail:** `GET /api/hatchery-live/local/{screen_path}/{{local_id}}`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "hatchery_username", "value": "superadmin" },
+    { "key": "hatchery_password", "value": "Krishi@123" },
+    { "key": "category", "value": "Hatchery" },
+    { "key": "token", "value": "" },
+    { "key": "local_id", "value": "" },
+    { "key": "screen_path", "value": "egg-receipt" }
+  ],
+  "item": [
+    {
+      "name": "01 Login (Hatchery)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/admin/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{hatchery_username}}\",\n  \"password\": \"{{hatchery_password}}\",\n  \"category\": \"{{category}}\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Login 200', () => pm.response.to.have.status(200));",
+              "let j = {}; try { j = pm.response.json(); } catch (e) {}",
+              "const t = j.token || '';",
+              "if (t) pm.collectionVariables.set('token', t);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Admin grid — all modules",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/hatchery-live/admin/grid"
+      }
+    },
+    {
+      "name": "03 Admin grid — egg-receipt only",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/hatchery-live/admin/grid?screen=egg-receipt"
+      }
+    },
+    {
+      "name": "04 Admin grid — filter werks + dates",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/hatchery-live/admin/grid?screen=all&werks=1803&from_date=2026-01-01&to_date=2026-12-31"
+      }
+    },
+    {
+      "name": "05 GET one row (edit form)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/hatchery-live/local/{{screen_path}}/{{local_id}}"
+      }
+    },
+    {
+      "name": "06 POST save (edit — send real id + body)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "description": "Replace numeric `id` with a row from the grid. Copy full `form` from request 05 response (`data.payload` + top-level keys as needed).",
+        "url": "{{base_url}}/api/hatchery-live/local/{{screen_path}}/save",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 1,\n  \"werks\": \"1803\",\n  \"form\": {}\n}"
+        }
+      }
+    },
+    {
+      "name": "07 DELETE row (not SAP-synced)",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/hatchery-live/local/{{screen_path}}/{{local_id}}"
+      }
+    }
+  ]
+}
