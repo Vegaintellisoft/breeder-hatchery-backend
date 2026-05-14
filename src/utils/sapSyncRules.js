@@ -23,12 +23,33 @@ function getTodayYmdIST() {
   }).format(new Date());
 }
 
+/** Calendar YYYY-MM-DD in Asia/Kolkata (same basis as getTodayYmdIST / mobile sync rules). */
+function toYmdISTFromDate(d) {
+  if (!(d instanceof Date) || isNaN(d.getTime())) return null;
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(d);
+}
+
+/**
+ * Normalize any DB / API date value to YYYY-MM-DD for IST business-day comparisons.
+ * Important: never use Date#toISOString().slice(0,10) for PostgreSQL DATE values — node-pg
+ * often builds a Date at local midnight, which becomes the *previous* UTC calendar day.
+ */
 function normalizeYmd(value) {
-  if (!value) return null;
+  if (value == null || value === '') return null;
   if (value instanceof Date) {
-    return value.toISOString().slice(0, 10);
+    return toYmdISTFromDate(value);
   }
-  const s = String(value);
+  const s = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  if (s.includes('T')) {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) return toYmdISTFromDate(d);
+  }
   const m = /^(\d{4}-\d{2}-\d{2})/.exec(s);
   return m ? m[1] : s.slice(0, 10);
 }
