@@ -41,6 +41,7 @@ const hatcheryLiveRoutes        = require('./routes/hatcheryLive');
 const adminRoute                = require('./routes/adminRoute');
 const roleRoute                 = require('./routes/roleRoute');
 const adminGridRoutes           = require('./routes/adminGridRoutes');
+const plantMasterRoutes         = require('./routes/plantMaster');
 
 const { startCron }       = require('./jobs/vaccinationCron');
 const { startBiosecCron } = require('./jobs/biosecCron');
@@ -99,6 +100,7 @@ app.use('/api/sap-sync',              sapSyncRoutes);
 app.use('/api/sap-live',              sapLiveRoutes);
 app.use('/api/hatchery-live',         hatcheryLiveRoutes);
 app.use('/api/roles',                 roleRoute);
+app.use('/api/masters/plant',         plantMasterRoutes);
 
 // ── Health ────────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => {
