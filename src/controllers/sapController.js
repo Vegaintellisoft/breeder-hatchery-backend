@@ -3,7 +3,7 @@ const pool  = require('../config/db');
 
 // ── SAP connection ────────────────────────────────────────────────────────
 const SAP_BASE   = process.env.SAP_BASE_URL || 'http://krishidevqas.krishinutrition.com:8001/sap/bc/breeder';
-const SAP_AUTH   = { username: process.env.SAP_USER || 'vega', password: process.env.SAP_PASSWORD || 'Vega@1234' };
+const SAP_AUTH   = { username: process.env.SAP_USER || 'vega', password: process.env.SAP_PASSWORD || 'Vegaintell@123' };
 const SAP_PARAMS = { 'sap-client': process.env.SAP_CLIENT || '500' };
 
 // ── Helpers ───────────────────────────────────────────────────────────────

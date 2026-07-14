@@ -8,7 +8,7 @@ const SAP_MOBILE_BASE =
   process.env.SAP_MOBILE_BASE_URL || 'http://krishidevqas.krishinutrition.com:8001/sap/bc/mobile_app';
 const SAP_AUTH = {
   username: process.env.SAP_USER || 'vega',
-  password: process.env.SAP_PASSWORD || 'Vega@1234',
+  password: process.env.SAP_PASSWORD || 'Vegaintell@123',
 };
 const SAP_CLIENT = process.env.SAP_CLIENT || '500';
 

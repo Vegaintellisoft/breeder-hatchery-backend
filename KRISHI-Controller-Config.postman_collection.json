@@ -1,0 +1,271 @@
+{
+	"info": {
+		"_postman_id": "controller-config-api",
+		"name": "KRISHI - Controller Config & Mobile API",
+		"description": "Controller Config APIs for Admin Panel toggle management and Mobile App field visibility.\n\n**Modules:** Feed, Water, Medicine, Others, Mortality, Cull Kill, Egg Collection\n**Rule:** If Part=OFF → Line is forced OFF\n\n**Base URL:** http://localhost:3000\n**Auth:** Bearer Token required",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{ "key": "base_url", "value": "http://localhost:3000" },
+		{ "key": "token", "value": "YOUR_JWT_TOKEN_HERE" }
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+	},
+	"item": [
+		{
+			"name": "Admin — Controller Config",
+			"item": [
+				{
+					"name": "1. Get All Configs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/controller-config",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config"],
+							"query": [
+								{ "key": "plant_code", "value": "0001", "description": "Filter by plant code", "disabled": true },
+								{ "key": "search", "value": "", "description": "Search plant_code, plant_name, shed_no", "disabled": true }
+							]
+						},
+						"description": "Get all controller configs for admin grid.\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"total\": 2,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"plant_code\": \"0001\",\n      \"plant_name\": \"Breeder Farm\",\n      \"shed_id\": 1,\n      \"shed_no\": \"S1\",\n      \"feed_part\": true,\n      \"feed_line\": false,\n      \"water_part\": false,\n      \"water_line\": false,\n      \"medicine_part\": false,\n      \"medicine_line\": false,\n      ...\n    }\n  ]\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Config By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/controller-config/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Create Config (Upsert)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"plant_code\": \"0001\",\n  \"shed_id\": 1,\n  \"feed_part\": true,\n  \"feed_line\": false,\n  \"water_part\": true,\n  \"water_line\": false,\n  \"medicine_part\": true,\n  \"medicine_line\": true,\n  \"others_part\": false,\n  \"others_line\": false,\n  \"mortality_part\": true,\n  \"mortality_line\": true,\n  \"cull_kill_part\": true,\n  \"cull_kill_line\": false,\n  \"egg_collection_part\": true,\n  \"egg_collection_line\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/controller-config",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config"]
+						},
+						"description": "Create or upsert controller config for a plant+shed.\n\n**Key Rule:** If any `*_part` is `false`, its `*_line` is automatically forced to `false`.\n\n**Required:** plant_code, shed_id\n**Optional:** All toggle fields (default: false)"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Update Config",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"feed_part\": true,\n  \"feed_line\": true,\n  \"mortality_part\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/controller-config/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config", "1"]
+						},
+						"description": "Update toggle values. If `mortality_part` is set to `false`, `mortality_line` is automatically set to `false`."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Toggle Single Switch",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"module\": \"feed\",\n  \"field\": \"part\",\n  \"value\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/controller-config/toggle",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config", "toggle"]
+						},
+						"description": "Toggle a single switch in the admin grid.\n\n**module:** feed | water | medicine | others | mortality | cull_kill | egg_collection\n**field:** part | line\n\n**Rules enforced:**\n- Turning OFF part → automatically turns OFF line\n- Turning ON line when part is OFF → returns error"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Toggle — Turn OFF Part (forces Line OFF)",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"module\": \"feed\",\n  \"field\": \"part\",\n  \"value\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/controller-config/toggle",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config", "toggle"]
+						},
+						"description": "When Part is turned OFF, Line is automatically turned OFF too."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Toggle — Try ON Line when Part is OFF (ERROR)",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"module\": \"feed\",\n  \"field\": \"line\",\n  \"value\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/controller-config/toggle",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config", "toggle"]
+						},
+						"description": "This should return error if Part is OFF:\n```json\n{\n  \"success\": false,\n  \"message\": \"Cannot enable line when part is OFF for feed. Enable part first.\"\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "8. Bulk Upsert (Save Entire Grid)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"configs\": [\n    {\n      \"plant_code\": \"0001\",\n      \"shed_id\": 1,\n      \"feed_part\": true,\n      \"feed_line\": true,\n      \"water_part\": true,\n      \"water_line\": false,\n      \"medicine_part\": false,\n      \"medicine_line\": false,\n      \"mortality_part\": true,\n      \"mortality_line\": false\n    },\n    {\n      \"plant_code\": \"0001\",\n      \"shed_id\": 2,\n      \"feed_part\": true,\n      \"feed_line\": false,\n      \"water_part\": false,\n      \"water_line\": false,\n      \"mortality_part\": true,\n      \"mortality_line\": true\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/controller-config/bulk",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config", "bulk"]
+						},
+						"description": "Save the entire admin grid at once. Upserts all configs."
+					},
+					"response": []
+				},
+				{
+					"name": "9. Reset Config (All OFF)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/controller-config/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "controller-config", "1"]
+						},
+						"description": "Soft-reset: sets all toggles to FALSE for this config."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mobile — Controller Config",
+			"item": [
+				{
+					"name": "1. Get Config for Module",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/mobile/controller-config?plant_code=0001&shed_id=1&module=mortality",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mobile", "controller-config"],
+							"query": [
+								{ "key": "plant_code", "value": "0001" },
+								{ "key": "shed_id", "value": "1" },
+								{ "key": "module", "value": "mortality", "description": "feed|water|medicine|others|mortality|cull_kill|egg_collection" }
+							]
+						},
+						"description": "Get field visibility config for a specific module.\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"plant_code\": \"0001\",\n    \"shed_id\": 1,\n    \"module\": \"mortality\",\n    \"part_enabled\": true,\n    \"line_enabled\": false,\n    \"fields\": {\n      \"part_row\": { \"visible\": true, \"required\": true },\n      \"line\": { \"visible\": false, \"required\": false }\n    }\n  }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get All Modules Config",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/mobile/controller-config?plant_code=0001&shed_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mobile", "controller-config"],
+							"query": [
+								{ "key": "plant_code", "value": "0001" },
+								{ "key": "shed_id", "value": "1" }
+							]
+						},
+						"description": "Get config for ALL modules (omit module param).\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"plant_code\": \"0001\",\n    \"shed_id\": 1,\n    \"modules\": {\n      \"feed\": { \"part_enabled\": true, \"line_enabled\": true, \"fields\": {...} },\n      \"water\": { \"part_enabled\": true, \"line_enabled\": false, \"fields\": {...} },\n      \"medicine\": { ... },\n      \"mortality\": { ... }\n    }\n  }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get All Configs for Plant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/mobile/controller-config/all?plant_code=0001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mobile", "controller-config", "all"],
+							"query": [
+								{ "key": "plant_code", "value": "0001" }
+							]
+						},
+						"description": "Get all configs for all sheds in a plant. Useful for mobile app to cache all config upfront."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Validate Form — Valid (Part provided)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"plant_code\": \"0001\",\n  \"shed_id\": 1,\n  \"module\": \"mortality\",\n  \"part_id\": 5,\n  \"line_id\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/mobile/controller-config/validate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mobile", "controller-config", "validate"]
+						},
+						"description": "Validate form submission. If part is enabled and part_id is provided → valid.\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"valid\": true,\n  \"module\": \"mortality\",\n  \"message\": \"Validation passed\"\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Validate Form — Invalid (Part missing)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"plant_code\": \"0001\",\n  \"shed_id\": 1,\n  \"module\": \"mortality\",\n  \"part_id\": null,\n  \"line_id\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/mobile/controller-config/validate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mobile", "controller-config", "validate"]
+						},
+						"description": "If part is enabled but part_id is NOT provided → error.\n\n**Response:**\n```json\n{\n  \"success\": false,\n  \"valid\": false,\n  \"errors\": [\"Part/Row value is required for this module\"]\n}\n```"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

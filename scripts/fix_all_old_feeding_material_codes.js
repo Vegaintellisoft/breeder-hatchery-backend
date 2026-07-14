@@ -6,7 +6,7 @@ const SAP_BASE = process.env.SAP_BASE_URL || 'http://krishidevqas.krishinutritio
 const SAP_MASTERS_URL = process.env.SAP_MASTERS_URL || String(SAP_BASE).replace(/\/breeder\/?$/i, '');
 const SAP_AUTH = {
   username: process.env.SAP_USER || 'vega',
-  password: process.env.SAP_PASSWORD || 'Vega@1234',
+  password: process.env.SAP_PASSWORD || 'Vegaintell@123',
 };
 const SAP_CLIENT = process.env.SAP_CLIENT || '500';
 const PLANT_CODE = process.env.SAP_PLANT_CODE || '1902';

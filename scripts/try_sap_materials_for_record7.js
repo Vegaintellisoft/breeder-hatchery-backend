@@ -17,7 +17,7 @@ const CODES = [
 
 const SAP_BASE = process.env.SAP_BASE_URL || 'http://krishidevqas.krishinutrition.com:8001/sap/bc/breeder';
 const SAP_MASTERS_URL = process.env.SAP_MASTERS_URL || String(SAP_BASE).replace(/\/breeder\/?$/i, '');
-const SAP_AUTH = { username: process.env.SAP_USER || 'vega', password: process.env.SAP_PASSWORD || 'Vega@1234' };
+const SAP_AUTH = { username: process.env.SAP_USER || 'vega', password: process.env.SAP_PASSWORD || 'Vegaintell@123' };
 const SAP_CLIENT = process.env.SAP_CLIENT || '500';
 const PLANT = '1902';
 

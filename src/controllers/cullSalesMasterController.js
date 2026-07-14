@@ -21,7 +21,7 @@ const axios = require('axios');
 const SAP_BASE = process.env.SAP_BASE_URL || 'http://krishidevqas.krishinutrition.com:8001/sap/bc/breeder';
 const SAP_AUTH = {
   username: process.env.SAP_USER     || 'vega',
-  password: process.env.SAP_PASSWORD || 'Vega@1234'
+  password: process.env.SAP_PASSWORD || 'Vegaintell@123'
 };
 
 // ── Valid master table names (same as broiler uniqueKeys) ─────────────────

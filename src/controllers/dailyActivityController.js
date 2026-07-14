@@ -4,7 +4,7 @@ const axios = require('axios');
 const { pushToSap } = require('../services/sapOutboundPush');
 
 const SAP_BASE   = process.env.SAP_BASE_URL || 'http://krishidevqas.krishinutrition.com:8001/sap/bc';
-const SAP_AUTH   = { username: process.env.SAP_USER || 'vega', password: process.env.SAP_PASSWORD || 'Vega@1234' };
+const SAP_AUTH   = { username: process.env.SAP_USER || 'vega', password: process.env.SAP_PASSWORD || 'Vegaintell@123' };
 const SAP_CLIENT = process.env.SAP_CLIENT || '500';
 
 // ── mtart → master type mapping (from SAP data analysis) ─────────────────

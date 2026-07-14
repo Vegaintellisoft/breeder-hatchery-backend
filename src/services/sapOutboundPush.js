@@ -9,7 +9,7 @@ const qs = require('qs');
 const SAP_BASE = process.env.SAP_BASE_URL || 'http://krishidevqas.krishinutrition.com:8001/sap/bc/breeder';
 const SAP_AUTH = {
   username: process.env.SAP_USER || 'vega',
-  password: process.env.SAP_PASSWORD || 'Vega@1234',
+  password: process.env.SAP_PASSWORD || 'Vegaintell@123',
 };
 const SAP_CLIENT = process.env.SAP_CLIENT || '500';
 const SAP_POST_TIMEOUT_MS = Number(process.env.SAP_POST_TIMEOUT_MS || 90000);
