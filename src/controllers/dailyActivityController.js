@@ -742,12 +742,20 @@ exports.getFeedingData = async (req, res) => {
 
   try {
     let q = `
-      SELECT ffl.*, TO_CHAR(ffl.feed_date,'YYYY-MM-DD') AS feed_date, sm.stock_qty, sm.cum_qty
+      SELECT ffl.*, 
+             TO_CHAR(ffl.feed_date,'YYYY-MM-DD') AS feed_date, 
+             sm.stock_qty, 
+             sm.cum_qty,
+             COALESCE(fm.mat_id, wm.water_id, mm.medicine_id, om.others_id) AS item_code
       FROM flock_feeding_log ffl
       LEFT JOIN stock_master sm
         ON sm.plant_code = ffl.plant_code
         AND sm.item_type = ffl.feed_type
         AND sm.item_id   = ffl.item_id
+      LEFT JOIN feed_master fm ON ffl.feed_type = 'feed' AND fm.id = ffl.item_id
+      LEFT JOIN water_master wm ON ffl.feed_type = 'water' AND wm.id = ffl.item_id
+      LEFT JOIN medicine_master mm ON ffl.feed_type = 'medicine' AND mm.id = ffl.item_id
+      LEFT JOIN others_master om ON ffl.feed_type = 'others' AND om.id = ffl.item_id
       WHERE ffl.flock_no=$1 AND ffl.feed_date=$2
     `;
     const params = [flock_no, feedDate];
@@ -836,11 +844,22 @@ exports.saveFeedingData = async (req, res) => {
     }
 
     for (const item of items) {
-      const sapMatnr = String(item.sap_matnr || item.type_id || '').trim();
+      let sapMatnr = String(item.sap_matnr || item.type_id || '').trim();
       if (!sapMatnr) {
         const e = new Error('sap_matnr required in each item (must come from SAP material list)');
         e.statusCode = 422;
         throw e;
+      }
+
+      // If the incoming sapMatnr is a numeric ID (e.g. from local DB mapping issue), resolve it to the string SAP code
+      if (/^\d+$/.test(sapMatnr)) {
+        const resolvedRes = await client.query(
+          `SELECT ${cfg.codeCol} AS real_code FROM ${cfg.table} WHERE id=$1 LIMIT 1`,
+          [parseInt(sapMatnr, 10)]
+        );
+        if (resolvedRes.rowCount > 0 && resolvedRes.rows[0].real_code) {
+          sapMatnr = resolvedRes.rows[0].real_code;
+        }
       }
 
       const reqMale = parseFloat(item.qty_issued_male) || 0;
